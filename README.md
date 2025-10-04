@@ -5,6 +5,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 ## ✨ Features
 
 ### Frontend
+
 - **Modern Tech Stack**: React 18, TypeScript, Vite
 - **Responsive Design**: Tailwind CSS with mobile-first approach
 - **UI Components**: Radix UI primitives with shadcn/ui
@@ -13,6 +14,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 - **Performance**: Optimized with Vite for fast development and builds
 
 ### Backend API
+
 - **Authentication**: JWT-based admin authentication
 - **Blog Management**: Complete CRUD operations for blog posts
 - **Database**: PostgreSQL with connection pooling
@@ -20,6 +22,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 - **API Documentation**: RESTful endpoints with proper status codes
 
 ### Portfolio Sections
+
 - **Hero**: Introduction with social links
 - **Skills**: Technical expertise and tools
 - **Experience**: Professional background
@@ -30,6 +33,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - PostgreSQL (v12 or higher)
 - npm or yarn
@@ -58,6 +62,7 @@ npm run dev:full
 3. The backend will auto-create tables and seed admin user on first run
 
 **Default Admin Credentials:**
+
 - Username: `admin`
 - Password: `admin123`
 
@@ -66,12 +71,14 @@ npm run dev:full
 ## 📊 Available Scripts
 
 ### Full-Stack Development
+
 ```bash
 npm run dev:full      # Start both frontend and backend
 npm run setup:full    # Install all dependencies
 ```
 
 ### Frontend Only
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -79,6 +86,7 @@ npm run preview      # Preview production build
 ```
 
 ### Backend Only
+
 ```bash
 npm run backend:dev    # Start backend in development
 npm run backend:build  # Build backend TypeScript
@@ -90,11 +98,13 @@ npm run backend:start  # Start built backend
 ### Base URL: `http://localhost:5000`
 
 ### Public Endpoints
+
 - `GET /health` - Health check
 - `GET /api/blog` - Get published blog posts
 - `GET /api/blog/:slug` - Get single blog post
 
 ### Admin Endpoints (Requires JWT)
+
 - `POST /api/auth/login` - Admin login
 - `GET /api/blog/admin/posts` - Get all posts (including drafts)
 - `POST /api/blog/admin` - Create blog post
@@ -167,6 +177,7 @@ npm run dev
 This project is built with:
 
 ### Frontend
+
 - **Vite** - Fast build tool and development server
 - **TypeScript** - Type-safe JavaScript
 - **React** - Component-based UI library
@@ -176,6 +187,7 @@ This project is built with:
 - **React Query** - Data fetching and state management
 
 ### Backend
+
 - **Node.js** - JavaScript runtime
 - **Express.js** - Web application framework
 - **TypeScript** - Type-safe server development

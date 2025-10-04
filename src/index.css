@@ -8,58 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 240 33% 97%; /* #F8F8FB - Almost White */
+    --foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 240 33% 97%; /* #F8F8FB - Almost White */
+    --card-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 240 33% 97%; /* #F8F8FB - Almost White */
+    --popover-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 330 100% 68%; /* #FF5C8D - Vivid Pink */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: 330 100% 88%; /* #FFC1DC - Soft Pink */
+    --secondary-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 330 100% 88%; /* #FFC1DC - Soft Pink */
+    --muted-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 340 100% 85%; /* #FFB6C1 - Light Pink */
+    --accent-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 330 100% 62%; /* #FF3E6C - Hot Pink */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 330 100% 88%; /* #FFC1DC - Soft Pink */
+    --input: 330 100% 88%; /* #FFC1DC - Soft Pink */
+    --ring: 330 100% 68%; /* #FF5C8D - Vivid Pink */
 
     /* Custom portfolio tokens - Light theme */
-    --gradient-primary: linear-gradient(135deg, hsl(221.2 83.2% 53.3%), hsl(262.1 83.3% 57.8%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 98%));
-    --glow-primary: 0 0 40px hsl(221.2 83.2% 53.3% / 0.2);
-    --glow-accent: 0 0 40px hsl(262.1 83.3% 57.8% / 0.2);
+    --gradient-primary: linear-gradient(135deg, hsl(330 100% 68%), hsl(340 100% 85%));
+    --gradient-card: linear-gradient(145deg, hsl(240 33% 97%), hsl(330 100% 95%));
+    --glow-primary: 0 0 40px hsl(330 100% 68% / 0.2);
+    --glow-accent: 0 0 40px hsl(340 100% 85% / 0.2);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 240 33% 95%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 330 100% 68%; /* #FF5C8D - Vivid Pink */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 330 100% 90%;
+    --sidebar-accent-foreground: 0 0% 20%;
+    --sidebar-border: 330 100% 90%;
+    --sidebar-ring: 330 100% 68%; /* #FF5C8D - Vivid Pink */
   }
 
   .dark {

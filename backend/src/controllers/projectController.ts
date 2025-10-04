@@ -12,19 +12,19 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
   try {
     // Check if we should only return published projects
     const publishedOnly = req.query.published === 'true';
-    
+
     const where: any = {};
     if (publishedOnly) {
       where.published = true;
     }
-    
+
     const projects = await prisma.project.findMany({
       where,
       orderBy: {
         created_at: 'desc'
       }
     });
-    
+
     res.json({
       success: true,
       data: {
@@ -52,7 +52,7 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
+
     if (!id || isNaN(Number(id))) {
       res.status(400).json({
         success: false,
@@ -60,13 +60,13 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
       });
       return;
     }
-    
+
     const project = await prisma.project.findUnique({
       where: {
         id: parseInt(id)
       }
     });
-    
+
     if (!project) {
       res.status(404).json({
         success: false,
@@ -74,7 +74,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
       });
       return;
     }
-    
+
     res.json({
       success: true,
       data: {
@@ -105,7 +105,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
       github_url,
       published = false
     }: CreateProjectData = req.body;
-    
+
     // Validate required fields
     if (!title || !description || !content) {
       res.status(400).json({
@@ -114,18 +114,18 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     // Sanitize input
     const sanitizedTitle = sanitizeString(title);
     const sanitizedDescription = sanitizeString(description);
     const sanitizedContent = sanitizeString(content);
-    const sanitizedTechnologies = Array.isArray(technologies) 
-      ? technologies.map(tech => sanitizeString(tech)) 
+    const sanitizedTechnologies = Array.isArray(technologies)
+      ? technologies.map(tech => sanitizeString(tech))
       : [];
     const sanitizedFeaturedImage = featured_image ? sanitizeString(featured_image) : null;
     const sanitizedProjectUrl = project_url ? sanitizeString(project_url) : null;
     const sanitizedGithubUrl = github_url ? sanitizeString(github_url) : null;
-    
+
     const project = await prisma.project.create({
       data: {
         title: sanitizedTitle,
@@ -138,7 +138,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
         published
       }
     });
-    
+
     res.status(201).json({
       success: true,
       message: 'Project created successfully',
@@ -171,7 +171,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
       github_url,
       published
     }: UpdateProjectData = req.body;
-    
+
     if (!id || isNaN(Number(id))) {
       res.status(400).json({
         success: false,
@@ -179,49 +179,49 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     // Build update data
     const data: any = {
       updated_at: new Date()
     };
-    
+
     if (title !== undefined) {
       data.title = sanitizeString(title);
     }
-    
+
     if (description !== undefined) {
       data.description = sanitizeString(description);
     }
-    
+
     if (content !== undefined) {
       data.content = sanitizeString(content);
     }
-    
+
     if (technologies !== undefined) {
-      data.technologies = Array.isArray(technologies) 
-        ? technologies.map(tech => sanitizeString(tech)) 
+      data.technologies = Array.isArray(technologies)
+        ? technologies.map(tech => sanitizeString(tech))
         : [];
     }
-    
+
     if (featured_image !== undefined) {
       data.featured_image = featured_image ? sanitizeString(featured_image) : null;
     }
-    
+
     if (project_url !== undefined) {
       data.project_url = project_url ? sanitizeString(project_url) : null;
     }
-    
+
     if (github_url !== undefined) {
       data.github_url = github_url ? sanitizeString(github_url) : null;
     }
-    
+
     if (published !== undefined) {
       data.published = published;
-      
+
       // Add published_at timestamp update
       data.published_at = published ? new Date() : null;
     }
-    
+
     // Check if any actual fields (not including updated_at) are being updated
     const updateFields = Object.keys(data).filter(key => key !== 'updated_at');
     if (updateFields.length === 0) {
@@ -231,14 +231,14 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     const project = await prisma.project.update({
       where: {
         id: parseInt(id)
       },
       data
     });
-    
+
     if (!project) {
       res.status(404).json({
         success: false,
@@ -246,7 +246,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     res.json({
       success: true,
       message: 'Project updated successfully',
@@ -269,7 +269,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
+
     if (!id || isNaN(Number(id))) {
       res.status(400).json({
         success: false,
@@ -277,13 +277,13 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     const project = await prisma.project.delete({
       where: {
         id: parseInt(id)
       }
     });
-    
+
     if (!project) {
       res.status(404).json({
         success: false,
@@ -291,7 +291,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
       });
       return;
     }
-    
+
     res.json({
       success: true,
       message: 'Project deleted successfully'

@@ -366,7 +366,7 @@ router.post('/admin/upload', [
 
     // Return the URL where the file can be accessed
     const imageUrl = `/uploads/${req.file.filename}`;
-    
+
     res.json({
       success: true,
       message: 'Image uploaded successfully',

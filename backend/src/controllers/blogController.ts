@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { 
-  CreateBlogPostData, 
-  UpdateBlogPostData, 
-  BlogPostFilters 
+import {
+  CreateBlogPostData,
+  UpdateBlogPostData,
+  BlogPostFilters
 } from '../models/BlogPost';
-import { 
-  generateSlug, 
-  calculateReadTime, 
-  extractExcerpt, 
-  sanitizeString 
+import {
+  generateSlug,
+  calculateReadTime,
+  extractExcerpt,
+  sanitizeString
 } from '../utils/helpers';
 
 const prisma = new PrismaClient();
@@ -19,11 +19,11 @@ const prisma = new PrismaClient();
  */
 export const getAllBlogPosts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { 
-      search, 
-      tags, 
-      limit = '10', 
-      offset = '0' 
+    const {
+      search,
+      tags,
+      limit = '10',
+      offset = '0'
     } = req.query;
 
     // Build where clause
@@ -161,11 +161,11 @@ export const getBlogPostBySlug = async (req: Request, res: Response): Promise<vo
  */
 export const getAdminBlogPosts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { 
-      published, 
-      search, 
-      limit = '10', 
-      offset = '0' 
+    const {
+      published,
+      search,
+      limit = '10',
+      offset = '0'
     } = req.query;
 
     // Build where clause
@@ -249,7 +249,7 @@ export const createBlogPost = async (req: Request, res: Response): Promise<void>
 
     // Generate slug from title
     const baseSlug = generateSlug(title);
-    
+
     // Check if slug already exists and make it unique if needed
     let slug = baseSlug;
     let counter = 1;
@@ -342,12 +342,12 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
     // Handle title update (regenerate slug if title changes)
     if (updateData.title && updateData.title !== existingPost.title) {
       data.title = sanitizeString(updateData.title);
-      
+
       // Generate new slug
       const baseSlug = generateSlug(updateData.title);
       let newSlug = baseSlug;
       let counter = 1;
-      
+
       while (true) {
         const existingSlug = await prisma.blogPost.findFirst({
           where: {
@@ -361,19 +361,19 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
         newSlug = `${baseSlug}-${counter}`;
         counter++;
       }
-      
+
       data.slug = newSlug;
     }
 
     // Handle other fields
     if (updateData.content !== undefined) {
       data.content = updateData.content;
-      
+
       // Auto-update read time when content changes (only if not explicitly provided)
       if (updateData.read_time === undefined) {
         data.read_time = calculateReadTime(updateData.content);
       }
-      
+
       // Auto-update excerpt if not explicitly provided
       if (updateData.excerpt === undefined) {
         data.excerpt = extractExcerpt(updateData.content);
@@ -386,7 +386,7 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
 
     if (updateData.published !== undefined) {
       data.published = updateData.published;
-      
+
       // Update published_at timestamp
       data.published_at = updateData.published ? new Date() : null;
     }
