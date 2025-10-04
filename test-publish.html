@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Publish Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>Login</h2>
+        <div>
+            <label>Username: <input type="text" id="username" value="admin"></label>
+        </div>
+        <div>
+            <label>Password: <input type="password" id="password" value="admin123"></label>
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Blog Publish Test</h2>
+        <button onclick="createBlogPost()">Create Blog Post</button>
+        <button onclick="publishBlogPost()">Publish Blog Post</button>
+        <div id="blogResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Project Publish Test</h2>
+        <button onclick="createProject()">Create Project</button>
+        <button onclick="publishProject()">Publish Project</button>
+        <div id="projectResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let authToken = '';
+        let blogPostId = null;
+        let projectId = null;
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    document.getElementById('loginResult').innerHTML = 'Login successful!';
+                    document.getElementById('loginResult').className = 'result success';
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                document.getElementById('loginResult').innerHTML = `Error: ${error.message}`;
+                document.getElementById('loginResult').className = 'result error';
+            }
+        }
+
+        async function createBlogPost() {
+            if (!authToken) {
+                document.getElementById('blogResult').innerHTML = 'Please login first';
+                document.getElementById('blogResult').className = 'result error';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/blog/admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: 'Test Blog Post',
+                        content: 'This is a test blog post for checking publish functionality.',
+                        excerpt: 'Test excerpt',
+                        published: false
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    blogPostId = data.data.post.id;
+                    document.getElementById('blogResult').innerHTML = `Blog post created successfully!\nID: ${blogPostId}\nStatus: Draft`;
+                    document.getElementById('blogResult').className = 'result success';
+                } else {
+                    throw new Error(data.message || 'Failed to create blog post');
+                }
+            } catch (error) {
+                document.getElementById('blogResult').innerHTML = `Error: ${error.message}`;
+                document.getElementById('blogResult').className = 'result error';
+            }
+        }
+
+        async function publishBlogPost() {
+            if (!authToken || !blogPostId) {
+                document.getElementById('blogResult').innerHTML = 'Please login and create a blog post first';
+                document.getElementById('blogResult').className = 'result error';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/blog/admin/${blogPostId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        published: true
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('blogResult').innerHTML = `Blog post published successfully!\nID: ${blogPostId}\nStatus: Published`;
+                    document.getElementById('blogResult').className = 'result success';
+                } else {
+                    throw new Error(data.message || 'Failed to publish blog post');
+                }
+            } catch (error) {
+                document.getElementById('blogResult').innerHTML = `Error: ${error.message}`;
+                document.getElementById('blogResult').className = 'result error';
+            }
+        }
+
+        async function createProject() {
+            if (!authToken) {
+                document.getElementById('projectResult').innerHTML = 'Please login first';
+                document.getElementById('projectResult').className = 'result error';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/projects/admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: 'Test Project',
+                        description: 'This is a test project for checking publish functionality.',
+                        content: 'Project content',
+                        published: false
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    projectId = data.data.project.id;
+                    document.getElementById('projectResult').innerHTML = `Project created successfully!\nID: ${projectId}\nStatus: Draft`;
+                    document.getElementById('projectResult').className = 'result success';
+                } else {
+                    throw new Error(data.message || 'Failed to create project');
+                }
+            } catch (error) {
+                document.getElementById('projectResult').innerHTML = `Error: ${error.message}`;
+                document.getElementById('projectResult').className = 'result error';
+            }
+        }
+
+        async function publishProject() {
+            if (!authToken || !projectId) {
+                document.getElementById('projectResult').innerHTML = 'Please login and create a project first';
+                document.getElementById('projectResult').className = 'result error';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/projects/admin/${projectId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        published: true
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('projectResult').innerHTML = `Project published successfully!\nID: ${projectId}\nStatus: Published`;
+                    document.getElementById('projectResult').className = 'result success';
+                } else {
+                    throw new Error(data.message || 'Failed to publish project');
+                }
+            } catch (error) {
+                document.getElementById('projectResult').innerHTML = `Error: ${error.message}`;
+                document.getElementById('projectResult').className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>
