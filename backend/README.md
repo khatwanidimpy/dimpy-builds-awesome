@@ -5,12 +5,14 @@ A robust Node.js/Express backend for the portfolio website with JWT authenticati
 ## 🚀 Features
 
 - **Authentication & Authorization**
+
   - JWT-based authentication
   - Admin role-based access control
   - Secure password hashing with bcrypt
   - Rate limiting for security
 
 - **Blog Management**
+
   - Complete CRUD operations
   - Published/Draft states
   - Auto-generated slugs
@@ -19,6 +21,7 @@ A robust Node.js/Express backend for the portfolio website with JWT authenticati
   - Read time calculation
 
 - **Database**
+
   - PostgreSQL with connection pooling
   - Auto-generated schemas
   - Data validation
@@ -78,14 +81,10 @@ Update `backend/.env` with your configuration:
 NODE_ENV=development
 PORT=5000
 
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=portfolio_db
-DB_USER=postgres
-DB_PASSWORD=your_password_here
+# Prisma Database URL
+DATABASE_URL=your_database_url
 
-# JWT Configuration  
+# JWT Configuration
 JWT_SECRET=your_super_secure_jwt_secret_key_here_at_least_64_characters_long
 JWT_EXPIRES_IN=7d
 
@@ -131,43 +130,48 @@ npm run backend:start
 ## 📊 API Endpoints
 
 ### Base URL
+
 - Development: `http://localhost:5000`
 - Health Check: `GET /health`
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/auth/login` | Admin login | Public |
-| POST | `/api/auth/verify` | Verify JWT token | Private |
-| GET | `/api/auth/profile` | Get user profile | Private |
+| Method | Endpoint            | Description      | Access  |
+| ------ | ------------------- | ---------------- | ------- |
+| POST   | `/api/auth/login`   | Admin login      | Public  |
+| POST   | `/api/auth/verify`  | Verify JWT token | Private |
+| GET    | `/api/auth/profile` | Get user profile | Private |
 
 ### Blog Endpoints
 
 #### Public Endpoints
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/blog` | Get published blog posts | Public |
-| GET | `/api/blog/:slug` | Get single blog post by slug | Public |
+
+| Method | Endpoint          | Description                  | Access |
+| ------ | ----------------- | ---------------------------- | ------ |
+| GET    | `/api/blog`       | Get published blog posts     | Public |
+| GET    | `/api/blog/:slug` | Get single blog post by slug | Public |
 
 #### Admin Endpoints
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/blog/admin/posts` | Get all posts (including drafts) | Admin |
-| GET | `/api/blog/admin/:id` | Get post by ID | Admin |
-| POST | `/api/blog/admin` | Create new blog post | Admin |
-| PUT | `/api/blog/admin/:id` | Update blog post | Admin |
-| DELETE | `/api/blog/admin/:id` | Delete blog post | Admin |
+
+| Method | Endpoint                | Description                      | Access |
+| ------ | ----------------------- | -------------------------------- | ------ |
+| GET    | `/api/blog/admin/posts` | Get all posts (including drafts) | Admin  |
+| GET    | `/api/blog/admin/:id`   | Get post by ID                   | Admin  |
+| POST   | `/api/blog/admin`       | Create new blog post             | Admin  |
+| PUT    | `/api/blog/admin/:id`   | Update blog post                 | Admin  |
+| DELETE | `/api/blog/admin/:id`   | Delete blog post                 | Admin  |
 
 ### Query Parameters
 
 **Blog List (`GET /api/blog`)**
+
 - `search`: Search in title and excerpt
 - `tags`: Filter by tags
 - `limit`: Number of posts per page (default: 10)
 - `offset`: Pagination offset (default: 0)
 
 **Admin Blog List (`GET /api/blog/admin/posts`)**
+
 - `published`: Filter by published status (true/false)
 - `search`: Search in title and content
 - `limit`: Number of posts per page (default: 10)
@@ -236,6 +240,7 @@ curl -X GET http://localhost:5000/api/blog/admin/posts \\n  -H \"Authorization: 
 ## 🗃️ Database Schema
 
 ### Users Table
+
 ```sql
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -249,6 +254,7 @@ CREATE TABLE users (
 ```
 
 ### Blog Posts Table
+
 ```sql
 CREATE TABLE blog_posts (
   id SERIAL PRIMARY KEY,
@@ -325,15 +331,17 @@ npm run setup:full # Install all dependencies
 ### Database Connection Issues
 
 1. **Check PostgreSQL is running**
+
    ```bash
    # Windows (if installed as service)
    net start postgresql-x64-13
-   
+
    # Check if process is running
    tasklist /fi \"imagename eq postgres.exe\"
    ```
 
 2. **Verify database exists**
+
    ```bash
    psql -U postgres -l
    ```

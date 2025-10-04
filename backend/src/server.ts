@@ -12,14 +12,11 @@ import blogRoutes from './routes/blogRoutes';
 import projectRoutes from './routes/projectRoutes';
 
 // Import middleware
-import { 
-  errorHandler, 
-  notFoundHandler, 
-  handleValidationErrors 
+import {
+  errorHandler,
+  notFoundHandler,
+  handleValidationErrors
 } from './middleware/errorHandler';
-
-// Import database initialization
-import { initializeDatabase } from './config/init';
 
 // Load environment variables
 dotenv.config();
@@ -127,9 +124,7 @@ app.use(errorHandler);
 // Initialize database and start server
 const startServer = async (): Promise<void> => {
   try {
-    // Initialize database
-    await initializeDatabase();
-    
+
     // Start server
     app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);
@@ -148,10 +143,6 @@ const startServer = async (): Promise<void> => {
       console.log(`   DELETE /api/blog/admin/:id`);
       console.log(`\n📂 Static File Serving:`);
       console.log(`   Images: http://localhost:${PORT}/uploads`);
-      console.log(`\n🔐 Admin Credentials:`);
-      console.log(`   Username: ${process.env.ADMIN_USERNAME || 'admin'}`);
-      console.log(`   Password: ${process.env.ADMIN_PASSWORD || 'admin123'}`);
-      console.log(`\n⚠️  Remember to change default credentials in production!`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
