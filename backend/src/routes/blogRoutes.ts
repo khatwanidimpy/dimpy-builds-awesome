@@ -13,12 +13,100 @@ import {
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Blog
+ *   description: Blog posts management
+ */
+
 // Public Routes (no authentication required)
 
 /**
- * @route   GET /api/blog
- * @desc    Get all published blog posts
- * @access  Public
+ * @swagger
+ * /api/blog:
+ *   get:
+ *     summary: Get all published blog posts
+ *     tags: [Blog]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter posts by title or excerpt
+ *       - in: query
+ *         name: tags
+ *         schema:
+ *           type: string
+ *         description: Filter posts by tag
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Number of posts to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *         description: Number of posts to skip
+ *     responses:
+ *       200:
+ *         description: List of published blog posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     posts:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           title:
+ *                             type: string
+ *                           slug:
+ *                             type: string
+ *                           excerpt:
+ *                             type: string
+ *                           author:
+ *                             type: string
+ *                           tags:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           featured_image:
+ *                             type: string
+ *                           read_time:
+ *                             type: string
+ *                           created_at:
+ *                             type: string
+ *                             format: date-time
+ *                           published_at:
+ *                             type: string
+ *                             format: date-time
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                         limit:
+ *                           type: integer
+ *                         offset:
+ *                           type: integer
+ *                         pages:
+ *                           type: integer
+ *       500:
+ *         description: Internal server error
  */
 router.get('/', [
   query('search').optional().isString(),
@@ -28,9 +116,71 @@ router.get('/', [
 ], getAllBlogPosts);
 
 /**
- * @route   GET /api/blog/:slug
- * @desc    Get single blog post by slug
- * @access  Public
+ * @swagger
+ * /api/blog/{slug}:
+ *   get:
+ *     summary: Get single blog post by slug
+ *     tags: [Blog]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Slug of the blog post
+ *     responses:
+ *       200:
+ *         description: Blog post details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         slug:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         excerpt:
+ *                           type: string
+ *                         author:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         read_time:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: Slug is required
+ *       404:
+ *         description: Blog post not found
+ *       500:
+ *         description: Internal server error
  */
 router.get('/:slug', [
   param('slug').notEmpty().withMessage('Slug is required')
@@ -39,9 +189,92 @@ router.get('/:slug', [
 // Admin Routes (authentication required)
 
 /**
- * @route   GET /api/blog/admin/posts
- * @desc    Get all blog posts for admin (includes drafts)
- * @access  Private (Admin)
+ * @swagger
+ * /api/blog/admin/posts:
+ *   get:
+ *     summary: Get all blog posts for admin (includes drafts)
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: published
+ *         schema:
+ *           type: boolean
+ *         description: Filter by published status
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter posts by title or content
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Number of posts to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *         description: Number of posts to skip
+ *     responses:
+ *       200:
+ *         description: List of blog posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     posts:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           title:
+ *                             type: string
+ *                           slug:
+ *                             type: string
+ *                           content:
+ *                             type: string
+ *                           excerpt:
+ *                             type: string
+ *                           author:
+ *                             type: string
+ *                           published:
+ *                             type: boolean
+ *                           tags:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           featured_image:
+ *                             type: string
+ *                           read_time:
+ *                             type: string
+ *                           created_at:
+ *                             type: string
+ *                             format: date-time
+ *                           updated_at:
+ *                             type: string
+ *                             format: date-time
+ *                           published_at:
+ *                             type: string
+ *                             format: date-time
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
  */
 router.get('/admin/posts', [
   authenticateToken,
@@ -53,9 +286,75 @@ router.get('/admin/posts', [
 ], getAdminBlogPosts);
 
 /**
- * @route   GET /api/blog/admin/:id
- * @desc    Get single blog post by ID for admin
- * @access  Private (Admin)
+ * @swagger
+ * /api/blog/admin/{id}:
+ *   get:
+ *     summary: Get single blog post by ID for admin
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Blog post details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         slug:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         excerpt:
+ *                           type: string
+ *                         author:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         read_time:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Blog post not found
+ *       500:
+ *         description: Internal server error
  */
 router.get('/admin/:id', [
   authenticateToken,
@@ -64,9 +363,103 @@ router.get('/admin/:id', [
 ], getBlogPostById);
 
 /**
- * @route   POST /api/blog/admin
- * @desc    Create new blog post
- * @access  Private (Admin)
+ * @swagger
+ * /api/blog/admin:
+ *   post:
+ *     summary: Create new blog post
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Blog post title
+ *               content:
+ *                 type: string
+ *                 description: Blog post content
+ *               excerpt:
+ *                 type: string
+ *                 description: Blog post excerpt
+ *               published:
+ *                 type: boolean
+ *                 description: Whether the post is published
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Tags for the blog post
+ *               featured_image:
+ *                 type: string
+ *                 description: URL to featured image
+ *               read_time:
+ *                 type: string
+ *                 description: Estimated read time
+ *     responses:
+ *       201:
+ *         description: Blog post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         slug:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         excerpt:
+ *                           type: string
+ *                         author:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         read_time:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
  */
 router.post('/admin', [
   authenticateToken,
@@ -102,9 +495,109 @@ router.post('/admin', [
 ], createBlogPost);
 
 /**
- * @route   PUT /api/blog/admin/:id
- * @desc    Update blog post
- * @access  Private (Admin)
+ * @swagger
+ * /api/blog/admin/{id}:
+ *   put:
+ *     summary: Update blog post
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the blog post
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Blog post title
+ *               content:
+ *                 type: string
+ *                 description: Blog post content
+ *               excerpt:
+ *                 type: string
+ *                 description: Blog post excerpt
+ *               published:
+ *                 type: boolean
+ *                 description: Whether the post is published
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Tags for the blog post
+ *               featured_image:
+ *                 type: string
+ *                 description: URL to featured image
+ *               read_time:
+ *                 type: string
+ *                 description: Estimated read time
+ *     responses:
+ *       200:
+ *         description: Blog post updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         slug:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         excerpt:
+ *                           type: string
+ *                         author:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         read_time:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Blog post not found
+ *       500:
+ *         description: Internal server error
  */
 router.put('/admin/:id', [
   authenticateToken,
@@ -141,9 +634,40 @@ router.put('/admin/:id', [
 ], updateBlogPost);
 
 /**
- * @route   DELETE /api/blog/admin/:id
- * @desc    Delete blog post
- * @access  Private (Admin)
+ * @swagger
+ * /api/blog/admin/{id}:
+ *   delete:
+ *     summary: Delete blog post
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Blog post deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Blog post not found
+ *       500:
+ *         description: Internal server error
  */
 router.delete('/admin/:id', [
   authenticateToken,

@@ -12,12 +12,87 @@ import {
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Projects
+ *   description: Project management
+ */
+
 // Public Routes (no authentication required)
 
 /**
- * @route   GET /api/projects
- * @desc    Get all published projects
- * @access  Public
+ * @swagger
+ * /api/projects:
+ *   get:
+ *     summary: Get all projects
+ *     tags: [Projects]
+ *     parameters:
+ *       - in: query
+ *         name: published
+ *         schema:
+ *           type: boolean
+ *         description: Filter by published status
+ *     responses:
+ *       200:
+ *         description: List of projects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     projects:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           title:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           content:
+ *                             type: string
+ *                           technologies:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           featured_image:
+ *                             type: string
+ *                           project_url:
+ *                             type: string
+ *                           github_url:
+ *                             type: string
+ *                           published:
+ *                             type: boolean
+ *                           created_at:
+ *                             type: string
+ *                             format: date-time
+ *                           updated_at:
+ *                             type: string
+ *                             format: date-time
+ *                           published_at:
+ *                             type: string
+ *                             format: date-time
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                         limit:
+ *                           type: integer
+ *                         offset:
+ *                           type: integer
+ *                         pages:
+ *                           type: integer
+ *       500:
+ *         description: Internal server error
  */
 router.get('/', [
   query('published').optional().isBoolean(),
@@ -29,9 +104,72 @@ router.get('/', [
 // Admin Routes (authentication required)
 
 /**
- * @route   GET /api/projects/admin
- * @desc    Get all projects for admin (includes drafts)
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin:
+ *   get:
+ *     summary: Get all projects for admin (includes drafts)
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: published
+ *         schema:
+ *           type: boolean
+ *         description: Filter by published status
+ *     responses:
+ *       200:
+ *         description: List of projects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     projects:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           title:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           content:
+ *                             type: string
+ *                           technologies:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           featured_image:
+ *                             type: string
+ *                           project_url:
+ *                             type: string
+ *                           github_url:
+ *                             type: string
+ *                           published:
+ *                             type: boolean
+ *                           created_at:
+ *                             type: string
+ *                             format: date-time
+ *                           updated_at:
+ *                             type: string
+ *                             format: date-time
+ *                           published_at:
+ *                             type: string
+ *                             format: date-time
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
  */
 router.get('/admin', [
   authenticateToken,
@@ -43,9 +181,73 @@ router.get('/admin', [
 ], getAllProjects);
 
 /**
- * @route   GET /api/projects/admin/:id
- * @desc    Get single project by ID for admin
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin/{id}:
+ *   get:
+ *     summary: Get single project by ID for admin
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the project
+ *     responses:
+ *       200:
+ *         description: Project details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     project:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         technologies:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         project_url:
+ *                           type: string
+ *                         github_url:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
  */
 router.get('/admin/:id', [
   authenticateToken,
@@ -54,9 +256,49 @@ router.get('/admin/:id', [
 ], getProjectById);
 
 /**
- * @route   POST /api/projects/admin/upload
- * @desc    Upload project image
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin/upload:
+ *   post:
+ *     summary: Upload project image
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                     filename:
+ *                       type: string
+ *       400:
+ *         description: No file uploaded
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
  */
 router.post('/admin/upload', [
   authenticateToken,
@@ -91,9 +333,105 @@ router.post('/admin/upload', [
 });
 
 /**
- * @route   POST /api/projects/admin
- * @desc    Create new project
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin:
+ *   post:
+ *     summary: Create new project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Project title
+ *               description:
+ *                 type: string
+ *                 description: Project description
+ *               content:
+ *                 type: string
+ *                 description: Project content
+ *               technologies:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Technologies used in the project
+ *               featured_image:
+ *                 type: string
+ *                 description: URL to featured image
+ *               project_url:
+ *                 type: string
+ *                 description: URL to the project
+ *               github_url:
+ *                 type: string
+ *                 description: URL to the GitHub repository
+ *               published:
+ *                 type: boolean
+ *                 description: Whether the project is published
+ *     responses:
+ *       201:
+ *         description: Project created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     project:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         technologies:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         project_url:
+ *                           type: string
+ *                         github_url:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
  */
 router.post('/admin', [
   authenticateToken,
@@ -134,9 +472,110 @@ router.post('/admin', [
 ], createProject);
 
 /**
- * @route   PUT /api/projects/admin/:id
- * @desc    Update project
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin/{id}:
+ *   put:
+ *     summary: Update project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the project
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Project title
+ *               description:
+ *                 type: string
+ *                 description: Project description
+ *               content:
+ *                 type: string
+ *                 description: Project content
+ *               technologies:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Technologies used in the project
+ *               featured_image:
+ *                 type: string
+ *                 description: URL to featured image
+ *               project_url:
+ *                 type: string
+ *                 description: URL to the project
+ *               github_url:
+ *                 type: string
+ *                 description: URL to the GitHub repository
+ *               published:
+ *                 type: boolean
+ *                 description: Whether the project is published
+ *     responses:
+ *       200:
+ *         description: Project updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     project:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         title:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         technologies:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         featured_image:
+ *                           type: string
+ *                         project_url:
+ *                           type: string
+ *                         github_url:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         created_at:
+ *                           type: string
+ *                           format: date-time
+ *                         updated_at:
+ *                           type: string
+ *                           format: date-time
+ *                         published_at:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
  */
 router.put('/admin/:id', [
   authenticateToken,
@@ -177,9 +616,40 @@ router.put('/admin/:id', [
 ], updateProject);
 
 /**
- * @route   DELETE /api/projects/admin/:id
- * @desc    Delete project
- * @access  Private (Admin)
+ * @swagger
+ * /api/projects/admin/{id}:
+ *   delete:
+ *     summary: Delete project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the project
+ *     responses:
+ *       200:
+ *         description: Project deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
  */
 router.delete('/admin/:id', [
   authenticateToken,

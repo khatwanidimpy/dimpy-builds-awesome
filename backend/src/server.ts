@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 // Import routes
 import authRoutes from './routes/authRoutes';
@@ -17,6 +19,9 @@ import {
   notFoundHandler,
   handleValidationErrors
 } from './middleware/errorHandler';
+
+// Import Swagger configuration
+import swaggerOptions from './config/swagger';
 
 // Load environment variables
 dotenv.config();
@@ -96,6 +101,10 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Swagger documentation
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // API routes
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/blog', blogRoutes);
@@ -107,12 +116,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'Portfolio Backend API',
     version: '1.0.0',
-    endpoints: {
-      health: '/health',
-      auth: '/api/auth',
-      blog: '/api/blog',
-      projects: '/api/projects'
-    }
+    documentation: '/api-docs'
   });
 });
 
@@ -124,25 +128,13 @@ app.use(errorHandler);
 // Initialize database and start server
 const startServer = async (): Promise<void> => {
   try {
-
     // Start server
     app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 API Base URL: http://localhost:${PORT}`);
       console.log(`❤️  Health Check: http://localhost:${PORT}/health`);
-      console.log(`\n📚 Available Endpoints:`);
-      console.log(`   POST /api/auth/login`);
-      console.log(`   POST /api/auth/verify`);
-      console.log(`   GET  /api/auth/profile`);
-      console.log(`   GET  /api/blog`);
-      console.log(`   GET  /api/blog/:slug`);
-      console.log(`   GET  /api/blog/admin/posts`);
-      console.log(`   POST /api/blog/admin`);
-      console.log(`   PUT  /api/blog/admin/:id`);
-      console.log(`   DELETE /api/blog/admin/:id`);
-      console.log(`\n📂 Static File Serving:`);
-      console.log(`   Images: http://localhost:${PORT}/uploads`);
+      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
