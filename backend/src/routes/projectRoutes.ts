@@ -19,8 +19,6 @@ const router = express.Router();
  *   description: Project management
  */
 
-// Public Routes (no authentication required)
-
 /**
  * @swagger
  * /api/projects:
@@ -101,93 +99,12 @@ router.get('/', [
   query('offset').optional().isInt({ min: 0 })
 ], getAllProjects);
 
-// Admin Routes (authentication required)
-
 /**
  * @swagger
- * /api/projects/admin:
+ * /api/projects/{id}:
  *   get:
- *     summary: Get all projects for admin (includes drafts)
+ *     summary: Get single project by ID
  *     tags: [Projects]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: published
- *         schema:
- *           type: boolean
- *         description: Filter by published status
- *     responses:
- *       200:
- *         description: List of projects
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: object
- *                   properties:
- *                     projects:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: integer
- *                           title:
- *                             type: string
- *                           description:
- *                             type: string
- *                           content:
- *                             type: string
- *                           technologies:
- *                             type: array
- *                             items:
- *                               type: string
- *                           featured_image:
- *                             type: string
- *                           project_url:
- *                             type: string
- *                           github_url:
- *                             type: string
- *                           published:
- *                             type: boolean
- *                           created_at:
- *                             type: string
- *                             format: date-time
- *                           updated_at:
- *                             type: string
- *                             format: date-time
- *                           published_at:
- *                             type: string
- *                             format: date-time
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal server error
- */
-router.get('/admin', [
-  authenticateToken,
-  requireAdmin,
-  query('published').optional().isBoolean(),
-  query('search').optional().isString(),
-  query('limit').optional().isInt({ min: 1, max: 100 }),
-  query('offset').optional().isInt({ min: 0 })
-], getAllProjects);
-
-/**
- * @swagger
- * /api/projects/admin/{id}:
- *   get:
- *     summary: Get single project by ID for admin
- *     tags: [Projects]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -240,97 +157,16 @@ router.get('/admin', [
  *                         published_at:
  *                           type: string
  *                           format: date-time
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
+ *       400:
+ *         description: Valid project ID is required
  *       404:
  *         description: Project not found
  *       500:
  *         description: Internal server error
  */
-router.get('/admin/:id', [
-  authenticateToken,
-  requireAdmin,
+router.get('/:id', [
   param('id').isInt().withMessage('Valid project ID is required')
 ], getProjectById);
-
-/**
- * @swagger
- * /api/projects/admin/upload:
- *   post:
- *     summary: Upload project image
- *     tags: [Projects]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: Image uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 data:
- *                   type: object
- *                   properties:
- *                     url:
- *                       type: string
- *                     filename:
- *                       type: string
- *       400:
- *         description: No file uploaded
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal server error
- */
-router.post('/admin/upload', [
-  authenticateToken,
-  requireAdmin
-], upload.single('image'), (req: express.Request, res: express.Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      });
-    }
-
-    // Return the URL where the file can be accessed
-    const imageUrl = `/uploads/${req.file.filename}`;
-    
-    res.json({
-      success: true,
-      message: 'Image uploaded successfully',
-      data: {
-        url: imageUrl,
-        filename: req.file.filename
-      }
-    });
-  } catch (error) {
-    console.error('Image upload error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
 
 /**
  * @swagger
@@ -470,6 +306,83 @@ router.post('/admin', [
     .isBoolean()
     .withMessage('Published must be a boolean')
 ], createProject);
+
+/**
+ * @swagger
+ * /api/projects/admin/upload:
+ *   post:
+ *     summary: Upload project image
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                     filename:
+ *                       type: string
+ *       400:
+ *         description: No file uploaded
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/admin/upload', [
+  authenticateToken,
+  requireAdmin
+], upload.single('image'), (req: express.Request, res: express.Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    // Return the URL where the file can be accessed
+    const imageUrl = `/uploads/${req.file.filename}`;
+    
+    res.json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: {
+        url: imageUrl,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
 
 /**
  * @swagger

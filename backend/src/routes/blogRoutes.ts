@@ -20,8 +20,6 @@ const router = express.Router();
  *   description: Blog posts management
  */
 
-// Public Routes (no authentication required)
-
 /**
  * @swagger
  * /api/blog:
@@ -185,8 +183,6 @@ router.get('/', [
 router.get('/:slug', [
   param('slug').notEmpty().withMessage('Slug is required')
 ], getBlogPostBySlug);
-
-// Admin Routes (authentication required)
 
 /**
  * @swagger
