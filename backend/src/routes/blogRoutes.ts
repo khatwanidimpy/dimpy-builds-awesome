@@ -10,6 +10,8 @@ import {
   deleteBlogPost,
   getBlogPostById
 } from '../controllers/blogController';
+import upload from '../middleware/upload';
+import { Request, Response } from 'express';
 
 const router = express.Router();
 
@@ -670,5 +672,77 @@ router.delete('/admin/:id', [
   requireAdmin,
   param('id').isInt().withMessage('Valid blog post ID is required')
 ], deleteBlogPost);
+
+/**
+ * @swagger
+ * /api/blog/admin/upload:
+ *   post:
+ *     summary: Upload featured image for blog post
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     imageUrl:
+ *                       type: string
+ *       400:
+ *         description: No file uploaded
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/admin/upload', [
+  authenticateToken,
+  requireAdmin,
+  upload.single('image')
+], (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    // Return the URL to access the uploaded file
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({
+      success: true,
+      data: {
+        imageUrl
+      }
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
 
 export default router;

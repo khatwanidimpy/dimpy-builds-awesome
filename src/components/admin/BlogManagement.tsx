@@ -1,11 +1,17 @@
-import { useState, useEffect, ChangeEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
-import { adminApi } from '@/lib/api';
+import { useState, useEffect, ChangeEvent, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { adminApi } from "@/lib/api";
 
 interface BlogPost {
   id: number;
@@ -35,7 +41,21 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
   const { toast } = useToast();
 
   // Get auth token from localStorage
-  const getToken = () => localStorage.getItem('authToken') || '';
+  const getToken = () => localStorage.getItem("authToken") || "";
+
+  // Base URL for backend API (without /api prefix for image URLs)
+  const API_BASE_URL = 'http://localhost:5000';
+
+  // Function to get full image URL
+  const getImageUrl = (imagePath: string | null) => {
+    if (!imagePath) return null;
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    // If it's a relative path, prefix with API base URL
+    return `${API_BASE_URL}${imagePath}`;
+  };
 
   // Fetch blog posts
   const fetchPosts = async () => {
@@ -46,11 +66,11 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
       setPosts(response.data?.posts || []);
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to fetch blog posts',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Failed to fetch blog posts",
+        variant: "destructive",
       });
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
       // Fallback to empty array
       setPosts([]);
     } finally {
@@ -67,66 +87,72 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
     try {
       const token = getToken();
       const newPost = {
-        title: 'New Blog Post',
-        content: 'Start writing your content here...',
-        excerpt: 'Brief description of your post',
+        title: "New Blog Post",
+        content: "Start writing your content here...",
+        excerpt: "Brief description of your post",
         published: false,
         tags: [],
         featured_image: null,
-        read_time: '5 min read'
+        read_time: "5 min read",
       };
-      
+
       const response = await adminApi.createBlogPost(token, newPost);
       toast({
-        title: 'Success',
-        description: 'New post created successfully',
+        title: "Success",
+        description: "New post created successfully",
       });
-      
+
       // Add the new post to the list
       if (response.data?.post) {
-        setPosts(prev => [response.data.post, ...prev]);
+        setPosts((prev) => [response.data.post, ...prev]);
         setSelectedPost(response.data.post);
       }
-      
+
       fetchPosts(); // Refresh the list
       onStatsUpdate?.(); // Refresh dashboard stats
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to create post',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Failed to create post",
+        variant: "destructive",
       });
-      console.error('Error creating post:', error);
+      console.error("Error creating post:", error);
     }
   };
 
   // Handle update post
   const handleUpdatePost = async () => {
     if (!selectedPost) return;
-    
+
     try {
       const token = getToken();
-      const response = await adminApi.updateBlogPost(token, selectedPost.id, selectedPost);
-      toast({
-        title: 'Success',
-        description: 'Post updated successfully',
-      });
-      
-      // Update the post in the list
-      setPosts(prev => 
-        prev.map(post => post.id === selectedPost.id ? response.data.post : post)
+      const response = await adminApi.updateBlogPost(
+        token,
+        selectedPost.id,
+        selectedPost
       );
-      
+      toast({
+        title: "Success",
+        description: "Post updated successfully",
+      });
+
+      // Update the post in the list
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === selectedPost.id ? response.data.post : post
+        )
+      );
+
       setIsEditing(false);
       fetchPosts(); // Refresh the list
       onStatsUpdate?.(); // Refresh dashboard stats
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to update post',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Failed to update post",
+        variant: "destructive",
       });
-      console.error('Error updating post:', error);
+      console.error("Error updating post:", error);
     }
   };
 
@@ -136,27 +162,27 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
       const token = getToken();
       await adminApi.deleteBlogPost(token, id);
       toast({
-        title: 'Success',
-        description: 'Post deleted successfully',
+        title: "Success",
+        description: "Post deleted successfully",
       });
-      
+
       // Remove the post from the list
-      setPosts(prev => prev.filter(post => post.id !== id));
-      
+      setPosts((prev) => prev.filter((post) => post.id !== id));
+
       if (selectedPost?.id === id) {
         setSelectedPost(null);
         setIsEditing(false);
       }
-      
+
       fetchPosts(); // Refresh the list
       onStatsUpdate?.(); // Refresh dashboard stats
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete post',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Failed to delete post",
+        variant: "destructive",
       });
-      console.error('Error deleting post:', error);
+      console.error("Error deleting post:", error);
     }
   };
 
@@ -165,7 +191,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
     if (selectedPost) {
       setSelectedPost({
         ...selectedPost,
-        [field]: value
+        [field]: value,
       });
     }
   };
@@ -174,25 +200,46 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    try {
-      // In a real implementation, you would upload the file to your server
-      // and get back a URL to store in the blog post data
+
+    // Check if file is an image
+    if (!file.type.startsWith("image/")) {
       toast({
-        title: 'Image Upload',
-        description: 'Image uploaded successfully (mock implementation)',
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive",
       });
+      return;
+    }
+
+    try {
+      // Show uploading state
+      toast({
+        title: "Uploading",
+        description: "Uploading image...",
+      });
+
+      // Upload the image to the server
+      const token = getToken();
+      const response = await adminApi.uploadImage(token, file);
       
-      // For demo purposes, we'll use a placeholder URL
-      const imageUrl = 'https://placehold.co/600x400';
-      handleInputChange('featured_image', imageUrl);
+      if (response.success && response.data?.imageUrl) {
+        // Set the uploaded image URL
+        handleInputChange("featured_image", response.data.imageUrl);
+        
+        toast({
+          title: "Success",
+          description: "Image uploaded successfully",
+        });
+      } else {
+        throw new Error("Failed to upload image");
+      }
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to upload image',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Failed to upload image",
+        variant: "destructive",
       });
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
   };
 
@@ -222,12 +269,12 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
             <CardContent>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {posts.map((post) => (
-                  <div 
-                    key={post.id} 
+                  <div
+                    key={post.id}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                      selectedPost?.id === post.id 
-                        ? 'bg-primary/10 border border-primary' 
-                        : 'bg-muted hover:bg-muted/80'
+                      selectedPost?.id === post.id
+                        ? "bg-primary/10 border border-primary"
+                        : "bg-muted hover:bg-muted/80"
                     }`}
                     onClick={() => {
                       setSelectedPost(post);
@@ -235,22 +282,26 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
                     }}
                   >
                     <h3 className="font-medium">{post.title}</h3>
-                    <p className="text-sm text-muted-foreground truncate">{post.excerpt}</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {post.excerpt}
+                    </p>
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-xs text-muted-foreground">
                         {new Date(post.created_at).toLocaleDateString()}
                       </span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        post.published 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {post.published ? 'Published' : 'Draft'}
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          post.published
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {post.published ? "Published" : "Draft"}
                       </span>
                     </div>
                   </div>
                 ))}
-                
+
                 {posts.length === 0 && (
                   <p className="text-center text-muted-foreground py-4">
                     No blog posts found. Create your first post!
@@ -269,33 +320,34 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
                 <div className="flex justify-between items-center">
                   <div>
                     <CardTitle>
-                      {isEditing ? 'Edit Post' : selectedPost.title}
+                      {isEditing ? "Edit Post" : selectedPost.title}
                     </CardTitle>
                     <CardDescription>
-                      {isEditing ? 'Modify your blog post' : 'View post details'}
+                      {isEditing
+                        ? "Modify your blog post"
+                        : "View post details"}
                     </CardDescription>
                   </div>
                   <div className="space-x-2">
                     {isEditing ? (
                       <>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsEditing(false)}
+                        >
                           Cancel
                         </Button>
-                        <Button onClick={handleUpdatePost}>
-                          Save Changes
-                        </Button>
+                        <Button onClick={handleUpdatePost}>Save Changes</Button>
                       </>
                     ) : (
                       <>
-                        <Button 
-                          variant="destructive" 
+                        <Button
+                          variant="destructive"
                           onClick={() => handleDeletePost(selectedPost.id)}
                         >
                           Delete
                         </Button>
-                        <Button onClick={() => setIsEditing(true)}>
-                          Edit
-                        </Button>
+                        <Button onClick={() => setIsEditing(true)}>Edit</Button>
                       </>
                     )}
                   </div>
@@ -309,61 +361,79 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
                       <Input
                         id="title"
                         value={selectedPost.title}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("title", e.target.value)
+                        }
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="excerpt">Excerpt</Label>
                       <Textarea
                         id="excerpt"
                         value={selectedPost.excerpt}
-                        onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("excerpt", e.target.value)
+                        }
                         rows={3}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="content">Content</Label>
                       <Textarea
                         id="content"
                         value={selectedPost.content}
-                        onChange={(e) => handleInputChange('content', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("content", e.target.value)
+                        }
                         rows={10}
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="read_time">Read Time</Label>
                         <Input
                           id="read_time"
                           value={selectedPost.read_time}
-                          onChange={(e) => handleInputChange('read_time', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("read_time", e.target.value)
+                          }
                         />
                       </div>
-                      
+
                       <div>
                         <Label htmlFor="tags">Tags (comma separated)</Label>
                         <Input
                           id="tags"
-                          value={selectedPost.tags.join(', ')}
-                          onChange={(e) => handleInputChange('tags', e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0))}
+                          value={selectedPost.tags.join(", ")}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "tags",
+                              e.target.value
+                                .split(",")
+                                .map((tag) => tag.trim())
+                                .filter((tag) => tag.length > 0)
+                            )
+                          }
                         />
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         id="published"
                         checked={selectedPost.published}
-                        onChange={(e) => handleInputChange('published', e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange("published", e.target.checked)
+                        }
                         className="h-4 w-4"
                       />
                       <Label htmlFor="published">Published</Label>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="image">Featured Image</Label>
                       <div className="flex items-end space-x-4">
@@ -374,68 +444,102 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
                           onChange={handleImageUpload}
                         />
                         {selectedPost.featured_image && (
-                          <img 
-                            src={selectedPost.featured_image} 
-                            alt="Preview" 
-                            className="w-16 h-16 object-cover rounded border"
-                          />
+                          <div className="relative">
+                            <img
+                              src={getImageUrl(selectedPost.featured_image)}
+                              alt="Preview"
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 rounded-full h-5 w-5 p-0"
+                              onClick={() =>
+                                handleInputChange("featured_image", null)
+                              }
+                            >
+                              ×
+                            </Button>
+                          </div>
                         )}
                       </div>
+                      {selectedPost.featured_image && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Note: Save the post to upload the image to the server.
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-lg font-medium mb-2">Excerpt</h3>
-                      <p className="text-muted-foreground">{selectedPost.excerpt}</p>
+                      <p className="text-muted-foreground">
+                        {selectedPost.excerpt}
+                      </p>
                     </div>
-                    
+
                     <div>
                       <h3 className="text-lg font-medium mb-2">Content</h3>
-                      <div className="prose max-w-none bg-muted p-4 rounded-lg">
-                        {selectedPost.content}
-                      </div>
+                      <div
+                        className="prose max-w-none bg-muted p-4 rounded-lg"
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            selectedPost.content ||
+                            "<p>No content available</p>",
+                        }}
+                      />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <h4 className="font-medium mb-1">Read Time</h4>
-                        <p className="text-muted-foreground">{selectedPost.read_time}</p>
+                        <p className="text-muted-foreground">
+                          {selectedPost.read_time}
+                        </p>
                       </div>
-                      
+
                       <div>
                         <h4 className="font-medium mb-1">Tags</h4>
                         <div className="flex flex-wrap gap-2">
                           {selectedPost.tags.map((tag, index) => (
-                            <span key={index} className="bg-primary/10 text-primary px-2 py-1 rounded text-sm">
+                            <span
+                              key={index}
+                              className="bg-primary/10 text-primary px-2 py-1 rounded text-sm"
+                            >
                               {tag}
                             </span>
                           ))}
                           {selectedPost.tags.length === 0 && (
-                            <span className="text-muted-foreground text-sm">No tags</span>
+                            <span className="text-muted-foreground text-sm">
+                              No tags
+                            </span>
                           )}
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <span className="font-medium">Status:</span>
-                      <span className={`px-2 py-1 rounded text-sm ${
-                        selectedPost.published 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {selectedPost.published ? 'Published' : 'Draft'}
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
+                          selectedPost.published
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {selectedPost.published ? "Published" : "Draft"}
                       </span>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium mb-1">Created At</h4>
                       <p className="text-muted-foreground">
                         {new Date(selectedPost.created_at).toLocaleString()}
                       </p>
                     </div>
-                    
+
                     {selectedPost.published_at && (
                       <div>
                         <h4 className="font-medium mb-1">Published At</h4>
@@ -444,13 +548,13 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
                         </p>
                       </div>
                     )}
-                    
+
                     {selectedPost.featured_image && (
                       <div>
                         <h4 className="font-medium mb-1">Featured Image</h4>
-                        <img 
-                          src={selectedPost.featured_image} 
-                          alt={selectedPost.title} 
+                        <img
+                          src={getImageUrl(selectedPost.featured_image)}
+                          alt={selectedPost.title}
                           className="w-full max-w-md h-auto rounded-lg border"
                         />
                       </div>

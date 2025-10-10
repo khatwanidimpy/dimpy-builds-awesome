@@ -204,6 +204,32 @@ export const adminApi = {
     }
   },
 
+  // Upload image
+  uploadImage: async (token: string, file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${API_BASE_URL}/blog/admin/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'An error occurred');
+      }
+      return data;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  },
+
   // Get admin projects
   getAdminProjects: async (token: string, params?: {
     published?: boolean;
