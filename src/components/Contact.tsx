@@ -51,6 +51,17 @@ const Contact = () => {
                     Schedule a Call
                   </a>
                 </Button>
+                
+                <Button 
+                  variant="secondary" 
+                  className="w-full hover:shadow-glow-secondary transition-all duration-300"
+                  asChild
+                >
+                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" download>
+                    <Mail className="mr-2 h-4 w-4" />
+                    Download Resume
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>

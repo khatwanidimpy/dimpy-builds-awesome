@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { authApi } from '@/lib/api';
 
 const Login = () => {
   const [username, setUsername] = useState('admin');
@@ -18,21 +19,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      console.log('Attempting login with:', { username, password });
-      
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', [...response.headers.entries()]);
-      
-      const data = await response.json();
-      console.log('Response data:', data);
+      const data = await authApi.login(username, password);
 
       if (data.success) {
         // Save token to localStorage
@@ -53,11 +40,11 @@ const Login = () => {
           variant: 'destructive',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
       toast({
         title: 'Error',
-        description: 'An error occurred during login. Please try again.',
+        description: error.message || 'An error occurred during login. Please try again.',
         variant: 'destructive',
       });
     } finally {

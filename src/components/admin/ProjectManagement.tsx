@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { adminApi } from '@/lib/api';
+import { projectsApi } from '@/lib/api';
 
 interface Project {
   id: number;
@@ -42,7 +42,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
     try {
       setLoading(true);
       const token = getToken();
-      const response = await adminApi.getAdminProjects(token, { limit: 100 });
+      const response = await projectsApi.getAdminProjects(token, { limit: 100 });
       setProjects(response.data?.projects || []);
     } catch (error: any) {
       toast({
@@ -77,7 +77,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
         published: false
       };
       
-      const response = await adminApi.createProject(token, newProject);
+      const response = await projectsApi.createProject(token, newProject);
       toast({
         title: 'Success',
         description: 'New project created successfully',
@@ -107,7 +107,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
     
     try {
       const token = getToken();
-      const response = await adminApi.updateProject(token, selectedProject.id, selectedProject);
+      const response = await projectsApi.updateProject(token, selectedProject.id, selectedProject);
       toast({
         title: 'Success',
         description: 'Project updated successfully',
@@ -135,7 +135,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
   const handleDeleteProject = async (id: number) => {
     try {
       const token = getToken();
-      await adminApi.deleteProject(token, id);
+      await projectsApi.deleteProject(token, id);
       toast({
         title: 'Success',
         description: 'Project deleted successfully',
@@ -179,30 +179,18 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
     try {
       setUploading(true);
       
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('image', file);
-      
       // Get auth token
       const token = getToken();
       
       // Upload image to backend
-      const response = await fetch('http://localhost:5000/api/projects/admin/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
+      const response = await projectsApi.uploadImage(token, file);
       
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Failed to upload image');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to upload image');
       }
       
       // Update the project with the new image URL
-      handleInputChange('featured_image', `http://localhost:5000${result.data.url}`);
+      handleInputChange('featured_image', response.data.url);
       
       toast({
         title: 'Success',

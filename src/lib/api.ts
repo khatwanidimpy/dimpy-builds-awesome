@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 // Helper function to handle API responses
 const handleResponse = async (response: Response) => {
@@ -33,7 +33,6 @@ export const blogApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Include credentials if needed for CORS
         credentials: 'include'
       });
       return handleResponse(response);
@@ -56,6 +55,119 @@ export const blogApi = {
       return handleResponse(response);
     } catch (error) {
       console.error('Error fetching blog post:', error);
+      throw error;
+    }
+  },
+
+  // Get admin blog posts
+  getAdminPosts: async (token: string, params?: {
+    published?: boolean;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined) {
+            searchParams.append(key, value.toString());
+          }
+        });
+      }
+
+      const response = await fetch(`${API_BASE_URL}/blog/admin/posts?${searchParams.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error fetching admin blog posts:', error);
+      throw error;
+    }
+  },
+
+  // Create blog post
+  createPost: async (token: string, postData: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/blog/admin`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+        credentials: 'include'
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error creating blog post:', error);
+      throw error;
+    }
+  },
+
+  // Update blog post
+  updatePost: async (token: string, id: number, postData: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/blog/admin/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+        credentials: 'include'
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error updating blog post:', error);
+      throw error;
+    }
+  },
+
+  // Delete blog post
+  deletePost: async (token: string, id: number) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/blog/admin/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error deleting blog post:', error);
+      throw error;
+    }
+  },
+
+  // Upload image for blog post
+  uploadImage: async (token: string, file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${API_BASE_URL}/blog/admin/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'An error occurred');
+      }
+      return data;
+    } catch (error) {
+      console.error('Error uploading image:', error);
       throw error;
     }
   }
@@ -115,10 +227,10 @@ export const authApi = {
   }
 };
 
-// Admin API functions
-export const adminApi = {
-  // Get admin blog posts
-  getAdminBlogPosts: async (token: string, params?: {
+// Projects API functions
+export const projectsApi = {
+  // Get all published projects
+  getAllProjects: async (params?: {
     published?: boolean;
     search?: string;
     limit?: number;
@@ -134,98 +246,16 @@ export const adminApi = {
         });
       }
 
-      const response = await fetch(`${API_BASE_URL}/blog/admin/posts?${searchParams.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/projects?${searchParams.toString()}`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         credentials: 'include'
       });
       return handleResponse(response);
     } catch (error) {
-      console.error('Error fetching admin blog posts:', error);
-      throw error;
-    }
-  },
-
-  // Create blog post
-  createBlogPost: async (token: string, postData: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blog/admin`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-        credentials: 'include'
-      });
-      return handleResponse(response);
-    } catch (error) {
-      console.error('Error creating blog post:', error);
-      throw error;
-    }
-  },
-
-  // Update blog post
-  updateBlogPost: async (token: string, id: number, postData: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blog/admin/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-        credentials: 'include'
-      });
-      return handleResponse(response);
-    } catch (error) {
-      console.error('Error updating blog post:', error);
-      throw error;
-    }
-  },
-
-  // Delete blog post
-  deleteBlogPost: async (token: string, id: number) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blog/admin/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
-      return handleResponse(response);
-    } catch (error) {
-      console.error('Error deleting blog post:', error);
-      throw error;
-    }
-  },
-
-  // Upload image
-  uploadImage: async (token: string, file: File) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch(`${API_BASE_URL}/blog/admin/upload`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || 'An error occurred');
-      }
-      return data;
-    } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error fetching projects:', error);
       throw error;
     }
   },
@@ -313,6 +343,31 @@ export const adminApi = {
       return handleResponse(response);
     } catch (error) {
       console.error('Error deleting project:', error);
+      throw error;
+    }
+  },
+
+  // Upload image for project
+  uploadImage: async (token: string, file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${API_BASE_URL}/projects/admin/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'An error occurred');
+      }
+      return data;
+    } catch (error) {
+      console.error('Error uploading project image:', error);
       throw error;
     }
   }

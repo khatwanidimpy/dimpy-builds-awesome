@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import { projectsApi } from '@/lib/api';
 
 interface Project {
   id: number;
@@ -25,16 +26,15 @@ const Projects = () => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/projects?published=true');
-        const data = await response.json();
+        const response = await projectsApi.getAllProjects({ published: true });
         
-        if (data.success) {
-          setProjects(data.data.projects);
+        if (response.success) {
+          setProjects(response.data.projects);
         } else {
-          setError(data.message || 'Failed to fetch projects');
+          setError(response.message || 'Failed to fetch projects');
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch projects');
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch projects');
         console.error('Error fetching projects:', err);
       } finally {
         setLoading(false);
