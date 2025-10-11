@@ -63,11 +63,11 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <section id="blog" className="py-20 bg-muted/30">
+      <section id="blog" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Latest <span className="bg-gradient-primary bg-clip-text text-transparent">Blog Posts</span>
+              Latest <span className="text-primary">Blog Posts</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Loading blog posts...
@@ -83,13 +83,13 @@ const Blog = () => {
 
   if (error) {
     return (
-      <section id="blog" className="py-20 bg-muted/30">
+      <section id="blog" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Latest <span className="bg-gradient-primary bg-clip-text text-transparent">Blog Posts</span>
+              Latest <span className="text-primary">Blog Posts</span>
             </h2>
-            <p className="text-lg text-red-500 max-w-2xl mx-auto">
+            <p className="text-lg text-destructive max-w-2xl mx-auto">
               Error: {error}
             </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
@@ -110,11 +110,11 @@ const Blog = () => {
   }
 
   return (
-    <section id="blog" className="py-20 bg-muted/30">
+    <section id="blog" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Latest <span className="bg-gradient-primary bg-clip-text text-transparent">Blog Posts</span>
+            Latest <span className="text-primary">Blog Posts</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Sharing insights, tutorials, and best practices from my DevOps journey
@@ -139,13 +139,13 @@ const Blog = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               {blogPosts.map((post) => (
-                <Card key={post.id} className="group hover:shadow-lg transition-shadow bg-card border-border">
+                <Card key={post.id} className="group hover:shadow-lg transition-all duration-300 border-primary/20 rounded-xl">
                   <CardHeader>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {post.tags.map((tag: string) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge key={tag} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
                           {tag}
                         </Badge>
                       ))}
@@ -155,7 +155,7 @@ const Blog = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
+                    <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
                       {post.excerpt}
                     </p>
                     
@@ -177,7 +177,7 @@ const Blog = () => {
                       <span>{post.read_time}</span>
                     </div>
 
-                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
+                    <Button variant="outline" className="w-full text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-colors" asChild>
                       <Link to={`/blog/${post.slug}`}>
                         Read More
                         <ExternalLink className="h-4 w-4 ml-2" />
@@ -192,6 +192,7 @@ const Blog = () => {
               <Button 
                 variant="default" 
                 size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
                 onClick={() => window.open('https://blog.dimpykhatwani.dev', '_blank')}
               >
                 View All Posts

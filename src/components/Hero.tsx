@@ -7,9 +7,9 @@ const Hero = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="space-y-8">
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
               Hi, I'm{' '}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-primary">
                 Dimpy Khatwani
               </span>{' '}
               👋
@@ -27,7 +27,7 @@ const Hero = () => {
             <Button 
               variant="default" 
               size="lg" 
-              className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/20"
               asChild
             >
               <a href="https://linkedin.com/in/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
@@ -39,7 +39,7 @@ const Hero = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              className="border-primary text-primary hover:bg-primary/10 transition-all duration-300"
               asChild
             >
               <a href="https://github.com/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
@@ -51,7 +51,7 @@ const Hero = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-primary text-primary hover:bg-accent hover:text-primary-foreground transition-all duration-300"
+              className="border-primary text-primary hover:bg-primary/10 transition-all duration-300"
               asChild
             >
               <a href="https://hub.docker.com/u/dimpykhatwani" target="_blank" rel="noopener noreferrer">
@@ -63,7 +63,7 @@ const Hero = () => {
             <Button 
               variant="secondary" 
               size="lg"
-              className="hover:shadow-glow-accent transition-all duration-300"
+              className="bg-secondary hover:bg-secondary/80 text-secondary-foreground transition-all duration-300"
               asChild
             >
               <a href="https://blog.dimpykhatwani.dev" target="_blank" rel="noopener noreferrer">

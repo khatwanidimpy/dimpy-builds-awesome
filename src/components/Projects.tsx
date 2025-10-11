@@ -50,7 +50,7 @@ const Projects = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              My <span className="bg-gradient-primary bg-clip-text text-transparent">Projects</span>
+              My <span className="text-primary">Projects</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Here are some of my recent projects
@@ -70,9 +70,9 @@ const Projects = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              My <span className="bg-gradient-primary bg-clip-text text-transparent">Projects</span>
+              My <span className="text-primary">Projects</span>
             </h2>
-            <p className="text-lg text-red-500 max-w-2xl mx-auto">
+            <p className="text-lg text-destructive max-w-2xl mx-auto">
               Error: {error}
             </p>
           </div>
@@ -86,7 +86,7 @@ const Projects = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            My <span className="bg-gradient-primary bg-clip-text text-transparent">Projects</span>
+            My <span className="text-primary">Projects</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Here are some of my recent projects
@@ -103,31 +103,31 @@ const Projects = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
-              <Card key={project.id} className="group hover:shadow-lg transition-shadow bg-card border-border">
+              <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 bg-card border-primary/20 rounded-xl overflow-hidden">
                 {project.featured_image && (
-                  <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                  <div className="aspect-video bg-muted overflow-hidden">
                     <img 
                       src={project.featured_image} 
                       alt={project.title} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                 )}
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="text-xl group-hover:text-primary transition-colors">
                     {project.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
+                  <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
                     {project.description}
                   </p>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.technologies.map((tech: string) => (
-                      <Badge key={tech} variant="secondary" className="text-xs">
+                      <Badge key={tech} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
                         {tech}
                       </Badge>
                     ))}
@@ -135,15 +135,15 @@ const Projects = () => {
 
                   <div className="flex space-x-2">
                     {project.project_url && (
-                      <Button variant="outline" size="sm" asChild>
+                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50" asChild>
                         <a href={project.project_url} target="_blank" rel="noopener noreferrer">
-                          View Project
+                          View
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </a>
                       </Button>
                     )}
                     {project.github_url && (
-                      <Button variant="outline" size="sm" asChild>
+                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50" asChild>
                         <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                           GitHub
                           <ExternalLink className="h-4 w-4 ml-2" />

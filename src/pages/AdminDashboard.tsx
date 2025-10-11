@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import BlogManagement from '@/components/admin/BlogManagement';
 import ProjectManagement from '@/components/admin/ProjectManagement';
-import { adminApi } from '@/lib/api';
+import { blogApi, projectsApi } from '@/lib/api';
 
 interface ManagementComponentProps {
   onStatsUpdate?: () => void;
@@ -30,14 +30,17 @@ const AdminDashboard = () => {
         const token = localStorage.getItem('authToken') || '';
         
         // Fetch blog posts count
-        const blogResponse = await adminApi.getAdminBlogPosts(token);
+        const blogResponse = await blogApi.getAdminPosts(token);
         const blogCount = blogResponse.data?.pagination?.total || 0;
         
-        // For now, we'll use static data for projects and analytics
-        // In a real implementation, you would fetch these from their respective APIs
+        // Fetch projects count
+        const projectResponse = await projectsApi.getAdminProjects(token);
+        const projectCount = projectResponse.data?.pagination?.total || 0;
+        
+        // For now, we'll use static data for analytics
         setStats({
           blogPosts: blogCount,
-          projects: 8, // Static data for now
+          projects: projectCount,
           analytics: 1248 // Static data for now
         });
       } catch (error: any) {

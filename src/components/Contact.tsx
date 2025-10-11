@@ -8,7 +8,7 @@ const Contact = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Let's Connect
+            Let's <span className="text-primary">Connect</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             I'm always interested in discussing DevOps best practices, cloud architecture, 
@@ -16,23 +16,23 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Direct Contact */}
-          <Card className="bg-gradient-card border-border/50 hover:shadow-glow-primary transition-all duration-300">
+          <Card className="border-primary/20 hover:shadow-lg transition-all duration-300 rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Mail className="mr-2 h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center text-primary">
+                <Mail className="mr-2 h-5 w-5" />
                 Direct Contact
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Ready to discuss your next project or have questions about DevOps?
               </p>
               
               <div className="space-y-3">
                 <Button 
-                  className="w-full bg-gradient-primary hover:shadow-glow-primary transition-all duration-300" 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300" 
                   asChild
                 >
                   <a href="mailto:dimpy@dimpykhatwani.dev">
@@ -43,7 +43,7 @@ const Contact = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                  className="w-full border-primary/30 text-primary hover:bg-primary/10 transition-all duration-300"
                   asChild
                 >
                   <a href="https://calendly.com/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
@@ -54,7 +54,7 @@ const Contact = () => {
                 
                 <Button 
                   variant="secondary" 
-                  className="w-full hover:shadow-glow-secondary transition-all duration-300"
+                  className="w-full hover:bg-secondary/80 transition-all duration-300"
                   asChild
                 >
                   <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" download>
@@ -67,22 +67,22 @@ const Contact = () => {
           </Card>
 
           {/* Social Links */}
-          <Card className="bg-gradient-card border-border/50 hover:shadow-glow-accent transition-all duration-300">
+          <Card className="border-primary/20 hover:shadow-lg transition-all duration-300 rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="mr-2 h-5 w-5 text-accent" />
+              <CardTitle className="flex items-center text-primary">
+                <MessageSquare className="mr-2 h-5 w-5" />
                 Social & Professional
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Connect with me on various platforms for updates and discussions.
               </p>
               
               <div className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                  className="w-full justify-start border-primary/30 text-primary hover:bg-primary/10 transition-all duration-300"
                   asChild
                 >
                   <a href="https://linkedin.com/in/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
@@ -93,7 +93,7 @@ const Contact = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start hover:bg-foreground hover:text-background transition-all duration-300"
+                  className="w-full justify-start border-primary/30 text-primary hover:bg-primary/10 transition-all duration-300"
                   asChild
                 >
                   <a href="https://github.com/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
@@ -104,7 +104,7 @@ const Contact = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start hover:bg-blue-500 hover:text-white transition-all duration-300"
+                  className="w-full justify-start border-primary/30 text-primary hover:bg-primary/10 transition-all duration-300"
                   asChild
                 >
                   <a href="https://twitter.com/dimpy_khatwani" target="_blank" rel="noopener noreferrer">
@@ -118,9 +118,9 @@ const Contact = () => {
         </div>
 
         {/* Additional Info */}
-        <Card className="mt-8 bg-muted/30 border-border/30">
+        <Card className="mt-8 border-primary/20 rounded-xl">
           <CardContent className="p-6 text-center">
-            <h3 className="font-semibold mb-2">Open to Opportunities</h3>
+            <h3 className="font-semibold mb-2 text-primary">Open to Opportunities</h3>
             <p className="text-sm text-muted-foreground">
               Currently seeking challenging DevOps and cloud engineering roles. 
               Available for freelance consulting on infrastructure automation and CI/CD implementation.

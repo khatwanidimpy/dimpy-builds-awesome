@@ -53,26 +53,26 @@ const Experience = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Professional Experience
+            Professional <span className="text-primary">Experience</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             My journey in DevOps and cloud engineering
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {experiences.map((exp, index) => (
-            <Card key={index} className="bg-gradient-card border-border/50 hover:shadow-glow-primary transition-all duration-300">
-              <CardContent className="p-8">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
+            <Card key={index} className="border-primary/20 hover:shadow-lg transition-all duration-300 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-5">
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-primary mb-2">{exp.position}</h3>
-                    <h4 className="text-xl font-semibold mb-3">{exp.company}</h4>
-                    <p className="text-muted-foreground mb-4">{exp.description}</p>
+                    <h3 className="text-xl font-bold text-primary mb-1">{exp.position}</h3>
+                    <h4 className="text-lg font-semibold mb-2">{exp.company}</h4>
+                    <p className="text-muted-foreground mb-4 text-sm">{exp.description}</p>
                   </div>
                   
                   <div className="lg:text-right lg:ml-8">
-                    <div className="flex items-center text-muted-foreground mb-2">
+                    <div className="flex items-center text-muted-foreground mb-1">
                       <CalendarDays className="h-4 w-4 mr-2" />
                       <span className="text-sm">{exp.duration}</span>
                     </div>
@@ -83,23 +83,23 @@ const Experience = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
-                  <h5 className="font-semibold mb-3">Key Achievements:</h5>
-                  <ul className="space-y-2">
+                <div className="mb-5">
+                  <h5 className="font-semibold mb-2 text-primary">Key Achievements:</h5>
+                  <ul className="space-y-1">
                     {exp.achievements.map((achievement, idx) => (
                       <li key={idx} className="flex items-start">
                         <span className="text-primary mr-2">•</span>
-                        <span className="text-muted-foreground">{achievement}</span>
+                        <span className="text-muted-foreground text-sm">{achievement}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 <div>
-                  <h5 className="font-semibold mb-3">Technologies:</h5>
+                  <h5 className="font-semibold mb-2 text-primary">Technologies:</h5>
                   <div className="flex flex-wrap gap-2">
                     {exp.technologies.map((tech, idx) => (
-                      <Badge key={idx} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground">
+                      <Badge key={idx} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
                         {tech}
                       </Badge>
                     ))}

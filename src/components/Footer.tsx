@@ -4,12 +4,12 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="bg-background border-t border-primary/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <h3 className="text-lg font-bold text-primary">
               Dimpy Khatwani
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -19,7 +19,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Quick Links</h4>
+            <h4 className="text-sm font-semibold text-primary">Quick Links</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <a href="#home" className="text-muted-foreground hover:text-primary transition-colors">
                 Home
@@ -44,7 +44,7 @@ const Footer = () => {
 
           {/* Connect */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Connect</h4>
+            <h4 className="text-sm font-semibold text-primary">Connect</h4>
             <div className="flex space-x-4">
               <a 
                 href="https://github.com/dimpy-khatwani" 
@@ -72,10 +72,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center">
+        <div className="mt-8 pt-8 border-t border-primary/20 text-center">
           <p className="text-sm text-muted-foreground flex items-center justify-center">
             © {currentYear} Dimpy Khatwani. Built with
-            <Heart className="h-4 w-4 mx-1 text-red-500" />
+            <Heart className="h-4 w-4 mx-1 text-primary" />
             and modern DevOps practices.
           </p>
         </div>
