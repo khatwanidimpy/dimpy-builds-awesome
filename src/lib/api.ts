@@ -33,7 +33,8 @@ export const blogApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
+        cache: 'no-cache'
       });
       return handleResponse(response);
     } catch (error) {
@@ -50,7 +51,9 @@ export const blogApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
+        // Add cache control to prevent aggressive caching
+        cache: 'no-cache'
       });
       return handleResponse(response);
     } catch (error) {
@@ -81,7 +84,9 @@ export const blogApi = {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
+        // Add cache control to prevent aggressive caching
+        cache: 'no-cache'
       });
       return handleResponse(response);
     } catch (error) {
@@ -251,7 +256,9 @@ export const projectsApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
+        // Add cache control to prevent aggressive caching
+        cache: 'no-cache'
       });
       return handleResponse(response);
     } catch (error) {
@@ -282,7 +289,9 @@ export const projectsApi = {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
+        // Add cache control to prevent aggressive caching
+        cache: 'no-cache'
       });
       return handleResponse(response);
     } catch (error) {

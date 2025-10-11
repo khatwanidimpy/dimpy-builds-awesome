@@ -45,9 +45,7 @@ const Blog = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching blog posts from API...');
         const response: BlogResponse = await blogApi.getAllPosts({ limit: 4 });
-        console.log('API Response:', response);
         setBlogPosts(response.data?.posts || []);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts';
@@ -67,10 +65,10 @@ const Blog = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Latest <span className="text-primary">Blog Posts</span>
+              Professional <span className="text-primary">Insights</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Loading blog posts...
+              Technical articles and industry perspectives
             </p>
           </div>
           <div className="flex justify-center">
@@ -93,7 +91,7 @@ const Blog = () => {
               Error: {error}
             </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
-              Sharing insights, tutorials, and best practices from my DevOps journey
+              Technical articles and industry perspectives
             </p>
             <div className="mt-6">
               <Button 
@@ -130,18 +128,20 @@ const Blog = () => {
               </p>
               <Button 
                 variant="outline" 
-                onClick={() => window.open('https://blog.dimpykhatwani.dev', '_blank')}
+                asChild
               >
-                Visit My Blog
-                <ExternalLink className="h-4 w-4 ml-2" />
+                <Link to="/blog">
+                  View All Posts
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Link>
               </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
               {blogPosts.map((post) => (
-                <Card key={post.id} className="group hover:shadow-lg transition-all duration-300 border-primary/20 rounded-xl">
+                <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
                   <CardHeader>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {post.tags.map((tag: string) => (
@@ -155,7 +155,7 @@ const Blog = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
+                    <p className="text-muted-foreground mb-4">
                       {post.excerpt}
                     </p>
                     
@@ -193,10 +193,12 @@ const Blog = () => {
                 variant="default" 
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-                onClick={() => window.open('https://blog.dimpykhatwani.dev', '_blank')}
+                asChild
               >
-                View All Posts
-                <ExternalLink className="h-4 w-4 ml-2" />
+                <Link to="/blog">
+                  View All Posts
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Link>
               </Button>
             </div>
           </>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 import { projectsApi } from '@/lib/api';
 
 interface Project {
@@ -50,10 +50,10 @@ const Projects = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              My <span className="text-primary">Projects</span>
+              Professional <span className="text-primary">Portfolio</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Here are some of my recent projects
+              Selected projects showcasing my technical expertise
             </p>
           </div>
           <div className="flex justify-center">
@@ -70,7 +70,7 @@ const Projects = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              My <span className="text-primary">Projects</span>
+              Professional <span className="text-primary">Portfolio</span>
             </h2>
             <p className="text-lg text-destructive max-w-2xl mx-auto">
               Error: {error}
@@ -86,26 +86,26 @@ const Projects = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            My <span className="text-primary">Projects</span>
+            Professional <span className="text-primary">Portfolio</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Here are some of my recent projects
+            Selected projects showcasing my technical expertise
           </p>
         </div>
 
         {projects.length === 0 ? (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <h3 className="text-xl font-semibold mb-4">No Projects Yet</h3>
+              <h3 className="text-xl font-semibold mb-4">Portfolio Updates Coming Soon</h3>
               <p className="text-muted-foreground mb-6">
-                I'm currently working on some exciting projects. Stay tuned!
+                I'm currently working on new projects to showcase. Please check back later!
               </p>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project) => (
-              <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 bg-card border-primary/20 rounded-xl overflow-hidden">
+              <Card key={project.id} className="group hover:shadow-md transition-all duration-300 bg-card border-muted rounded-lg overflow-hidden h-full flex flex-col">
                 {project.featured_image && (
                   <div className="aspect-video bg-muted overflow-hidden">
                     <img 
@@ -120,12 +120,12 @@ const Projects = () => {
                     {project.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
+                <CardContent className="flex-grow flex flex-col">
+                  <p className="text-muted-foreground mb-4 flex-grow">
                     {project.description}
                   </p>
                   
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {project.technologies.map((tech: string) => (
                       <Badge key={tech} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
                         {tech}
@@ -133,20 +133,19 @@ const Projects = () => {
                     ))}
                   </div>
 
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-3 mt-auto">
                     {project.project_url && (
-                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50" asChild>
+                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
                         <a href={project.project_url} target="_blank" rel="noopener noreferrer">
-                          View
+                          View Project
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </a>
                       </Button>
                     )}
                     {project.github_url && (
-                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50" asChild>
+                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
                         <a href={project.github_url} target="_blank" rel="noopener noreferrer">
-                          GitHub
-                          <ExternalLink className="h-4 w-4 ml-2" />
+                          <Github className="h-4 w-4" />
                         </a>
                       </Button>
                     )}
