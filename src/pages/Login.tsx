@@ -1,61 +1,64 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { authApi } from '@/lib/api';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 const Login = () => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
-  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
 
     try {
-      const data = await authApi.login(username, password);
-
-      if (data.success) {
-        // Save token to localStorage
-        localStorage.setItem('authToken', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
+      const response = await authApi.login(username, password);
+      
+      if (response.success) {
+        // Store token and user data
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         
         toast({
-          title: 'Login Successful',
-          description: 'You have been logged in successfully.',
+          title: 'Success',
+          description: 'Logged in successfully',
         });
         
-        // Redirect to admin dashboard or home page
+        // Redirect to admin dashboard
         navigate('/admin');
       } else {
         toast({
-          title: 'Login Failed',
-          description: data.message || 'Invalid credentials',
+          title: 'Error',
+          description: response.message || 'Login failed',
           variant: 'destructive',
         });
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       toast({
         title: 'Error',
-        description: error.message || 'An error occurred during login. Please try again.',
+        description: error.message || 'Login failed',
         variant: 'destructive',
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  // Set SEO for login page
+  updateMetaTags(SEO_CONFIGS.login);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+        <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access the admin panel
@@ -68,10 +71,10 @@ const Login = () => {
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -79,22 +82,17 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign In'}
+          <CardFooter>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
             </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              <Link to="/" className="hover:underline">
-                Back to Home
-              </Link>
-            </div>
           </CardFooter>
         </form>
       </Card>

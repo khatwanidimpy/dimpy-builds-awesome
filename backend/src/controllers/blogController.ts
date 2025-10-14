@@ -194,20 +194,33 @@ export const getAdminBlogPosts = async (req: Request, res: Response): Promise<vo
       ];
     }
 
+    // Parse pagination parameters
+    const limitNum = parseInt(limit as string) || 10;
+    const offsetNum = parseInt(offset as string) || 0;
+
     // Get posts with pagination
-    const posts = await prisma.blogPost.findMany({
-      where,
-      orderBy: {
-        created_at: 'desc'
-      },
-      skip: parseInt(offset as string) || 0,
-      take: parseInt(limit as string) || 10
-    });
+    const [posts, totalCount] = await Promise.all([
+      prisma.blogPost.findMany({
+        where,
+        orderBy: {
+          created_at: 'desc'
+        },
+        skip: offsetNum,
+        take: limitNum
+      }),
+      prisma.blogPost.count({ where })
+    ]);
 
     res.json({
       success: true,
       data: {
-        posts
+        posts,
+        pagination: {
+          total: totalCount,
+          limit: limitNum,
+          offset: offsetNum,
+          pages: Math.ceil(totalCount / limitNum)
+        }
       }
     });
 

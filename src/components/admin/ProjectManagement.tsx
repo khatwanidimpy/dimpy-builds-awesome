@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { projectsApi } from '@/lib/api';
+import { getImageUrl } from '@/lib/imageUtils';
 
 interface Project {
   id: number;
@@ -411,7 +412,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
                         )}
                         {selectedProject.featured_image && (
                           <img 
-                            src={selectedProject.featured_image} 
+                            src={getImageUrl(selectedProject.featured_image) || ''} 
                             alt="Preview" 
                             className="w-16 h-16 object-cover rounded border"
                           />
@@ -496,7 +497,7 @@ const ProjectManagement = ({ onStatsUpdate }: ProjectManagementProps) => {
                       <div>
                         <h4 className="font-medium mb-1">Featured Image</h4>
                         <img 
-                          src={selectedProject.featured_image} 
+                          src={getImageUrl(selectedProject.featured_image) || ''} 
                           alt={selectedProject.title} 
                           className="w-full max-w-md h-auto rounded-lg border"
                         />

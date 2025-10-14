@@ -8,6 +8,8 @@ import { blogApi } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { getImageUrl } from '@/lib/imageUtils';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 interface BlogPost {
   id: number;
@@ -46,6 +48,14 @@ const BlogPost = () => {
         setError(null);
         const response = await blogApi.getPostBySlug(slug);
         setPost(response.data?.post || null);
+        
+        // Update SEO based on post content
+        if (response.data?.post) {
+          updateMetaTags(SEO_CONFIGS.blogPost(
+            response.data.post.title,
+            response.data.post.excerpt
+          ));
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog post';
         setError(errorMessage);
@@ -121,7 +131,7 @@ const BlogPost = () => {
           {post.featured_image && (
             <div className="w-full h-64 md:h-96 overflow-hidden rounded-t-lg">
               <img 
-                src={post.featured_image} 
+                src={getImageUrl(post.featured_image) || ''} 
                 alt={post.title} 
                 className="w-full h-full object-cover"
               />

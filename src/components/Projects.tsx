@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
 import { projectsApi } from '@/lib/api';
+import { getImageUrl } from '@/lib/imageUtils';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 interface Project {
   id: number;
@@ -21,6 +23,10 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    updateMetaTags(SEO_CONFIGS.projects);
+  }, []);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -109,7 +115,7 @@ const Projects = () => {
                 {project.featured_image && (
                   <div className="aspect-video bg-muted overflow-hidden">
                     <img 
-                      src={project.featured_image} 
+                      src={getImageUrl(project.featured_image) || ''} 
                       alt={project.title} 
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />

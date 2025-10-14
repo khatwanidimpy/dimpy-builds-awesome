@@ -1,65 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import BlogManagement from '@/components/admin/BlogManagement';
+import { projectsApi, blogApi } from '@/lib/api';
 import ProjectManagement from '@/components/admin/ProjectManagement';
-import { blogApi, projectsApi } from '@/lib/api';
-
-interface ManagementComponentProps {
-  onStatsUpdate?: () => void;
-}
+import BlogManagement from '@/components/admin/BlogManagement';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState<'projects' | 'blog'>('projects');
   const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState({ projects: 0, blogPosts: 0 });
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [stats, setStats] = useState({
-    blogPosts: 0,
-    projects: 0,
-    analytics: 0
-  });
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Fetch real data from API
-  const fetchDashboardData = async () => {
-    if (!isLoading && user) {
-      try {
-        const token = localStorage.getItem('authToken') || '';
-        
-        // Fetch blog posts count
-        const blogResponse = await blogApi.getAdminPosts(token);
-        const blogCount = blogResponse.data?.pagination?.total || 0;
-        
-        // Fetch projects count
-        const projectResponse = await projectsApi.getAdminProjects(token);
-        const projectCount = projectResponse.data?.pagination?.total || 0;
-        
-        // For now, we'll use static data for analytics
-        setStats({
-          blogPosts: blogCount,
-          projects: projectCount,
-          analytics: 1248 // Static data for now
-        });
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: error.message || 'Failed to fetch dashboard data',
-          variant: 'destructive',
-        });
-        console.error('Error fetching dashboard data:', error);
-        
-        // Fallback to static data
-        setStats({
-          blogPosts: 12,
-          projects: 8,
-          analytics: 1248
-        });
-      }
-    }
-  };
+  useEffect(() => {
+    updateMetaTags(SEO_CONFIGS.admin);
+  }, []);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -90,9 +49,32 @@ const AdminDashboard = () => {
     checkAuth();
   }, [navigate, toast]);
 
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem('authToken') || '';
+      
+      // Fetch project count
+      const projectResponse = await projectsApi.getAdminProjects(token);
+      const projectCount = projectResponse.data?.projects?.length || 0;
+      
+      // Fetch blog post count
+      const blogResponse = await blogApi.getAdminPosts(token);
+      const blogCount = blogResponse.data?.posts?.length || 0;
+      
+      setStats({
+        projects: projectCount,
+        blogPosts: blogCount
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchDashboardData();
-  }, [isLoading, user, toast]);
+    if (!isLoading && user) {
+      fetchStats();
+    }
+  }, [isLoading, user]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -127,71 +109,56 @@ const AdminDashboard = () => {
       </header>
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex space-x-4 mb-6 border-b">
-          <Button
-            variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            Dashboard
-          </Button>
-          <Button
-            variant={activeTab === 'blog' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('blog')}
-          >
-            Blog Management
-          </Button>
-          <Button
-            variant={activeTab === 'projects' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('projects')}
-          >
-            Project Management
-          </Button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Projects</CardTitle>
+              <CardDescription>Total projects in portfolio</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{stats.projects}</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Blog Posts</CardTitle>
+              <CardDescription>Total blog posts published</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{stats.blogPosts}</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Manage your content</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col space-y-2">
+              <Button 
+                variant={activeTab === 'projects' ? 'default' : 'outline'}
+                onClick={() => setActiveTab('projects')}
+              >
+                Manage Projects
+              </Button>
+              <Button 
+                variant={activeTab === 'blog' ? 'default' : 'outline'}
+                onClick={() => setActiveTab('blog')}
+              >
+                Manage Blog Posts
+              </Button>
+            </CardContent>
+          </Card>
         </div>
         
-        {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Blog Posts</CardTitle>
-                <CardDescription>Manage your blog content</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold mb-4">{stats.blogPosts}</p>
-                <Button className="w-full" onClick={() => setActiveTab('blog')}>
-                  Manage Posts
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Projects</CardTitle>
-                <CardDescription>Manage your portfolio projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold mb-4">{stats.projects}</p>
-                <Button className="w-full" onClick={() => setActiveTab('projects')}>
-                  Manage Projects
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Analytics</CardTitle>
-                <CardDescription>View site statistics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold mb-4">{stats.analytics}</p>
-                <Button className="w-full">View Reports</Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-        
-        {activeTab === 'blog' && <BlogManagement onStatsUpdate={fetchDashboardData} />}
-        
-        {activeTab === 'projects' && <ProjectManagement onStatsUpdate={fetchDashboardData} />}
+        <div className="mt-8">
+          {activeTab === 'projects' ? (
+            <ProjectManagement onStatsUpdate={fetchStats} />
+          ) : (
+            <BlogManagement onStatsUpdate={fetchStats} />
+          )}
+        </div>
       </div>
     </div>
   );

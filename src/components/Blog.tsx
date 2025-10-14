@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { blogApi } from '@/lib/api';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 interface BlogPost {
   id: number;
@@ -38,24 +39,51 @@ interface BlogResponse {
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const limit = 6; // Load 6 posts at a time
 
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
+    updateMetaTags(SEO_CONFIGS.blog);
+  }, []);
+
+  const fetchBlogPosts = async (loadMore = false) => {
+    try {
+      if (loadMore) {
+        setLoadingMore(true);
+      } else {
         setLoading(true);
         setError(null);
-        const response: BlogResponse = await blogApi.getAllPosts({ limit: 4 });
-        setBlogPosts(response.data?.posts || []);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts';
-        setError(errorMessage);
-        console.error('Error fetching blog posts:', err);
-      } finally {
-        setLoading(false);
       }
-    };
+      
+      const response: BlogResponse = await blogApi.getAllPosts({ 
+        limit, 
+        offset: loadMore ? offset : 0 
+      });
+      
+      if (loadMore) {
+        setBlogPosts(prev => [...prev, ...response.data?.posts || []]);
+        setOffset(prev => prev + limit);
+      } else {
+        setBlogPosts(response.data?.posts || []);
+        setOffset(limit);
+      }
+      
+      // Check if there are more posts to load
+      setHasMore(response.data?.posts?.length === limit);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts';
+      setError(errorMessage);
+      console.error('Error fetching blog posts:', err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBlogPosts();
   }, []);
 
@@ -139,7 +167,7 @@ const Blog = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {blogPosts.map((post) => (
                 <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
                   <CardHeader>
@@ -189,17 +217,36 @@ const Blog = () => {
             </div>
 
             <div className="text-center">
-              <Button 
-                variant="default" 
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-                asChild
-              >
-                <Link to="/blog">
-                  View All Posts
-                  <ExternalLink className="h-4 w-4 ml-2" />
-                </Link>
-              </Button>
+              {hasMore ? (
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+                  onClick={() => fetchBlogPosts(true)}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Loading...
+                    </>
+                  ) : (
+                    'Load More Posts'
+                  )}
+                </Button>
+              ) : (
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+                  asChild
+                >
+                  <Link to="/blog">
+                    View All Posts
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </>
         )}

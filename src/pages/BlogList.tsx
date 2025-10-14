@@ -7,6 +7,7 @@ import { Calendar, User, ExternalLink } from 'lucide-react';
 import { blogApi } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 interface BlogPost {
   id: number;
@@ -40,24 +41,51 @@ interface BlogResponse {
 const BlogList = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const limit = 9; // Load 9 posts at a time
 
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
+    updateMetaTags(SEO_CONFIGS.blog);
+  }, []);
+
+  const fetchBlogPosts = async (loadMore = false) => {
+    try {
+      if (loadMore) {
+        setLoadingMore(true);
+      } else {
         setLoading(true);
         setError(null);
-        const response: BlogResponse = await blogApi.getAllPosts();
-        setBlogPosts(response.data?.posts || []);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts';
-        setError(errorMessage);
-        console.error('Error fetching blog posts:', err);
-      } finally {
-        setLoading(false);
       }
-    };
+      
+      const response: BlogResponse = await blogApi.getAllPosts({ 
+        limit, 
+        offset: loadMore ? offset : 0 
+      });
+      
+      if (loadMore) {
+        setBlogPosts(prev => [...prev, ...response.data?.posts || []]);
+        setOffset(prev => prev + limit);
+      } else {
+        setBlogPosts(response.data?.posts || []);
+        setOffset(limit);
+      }
+      
+      // Check if there are more posts to load
+      setHasMore(response.data?.posts?.length === limit);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts';
+      setError(errorMessage);
+      console.error('Error fetching blog posts:', err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBlogPosts();
   }, []);
 
@@ -136,54 +164,77 @@ const BlogList = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
-              <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
-                <CardHeader>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {post.tags.map((tag: string) => (
-                      <Badge key={tag} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                    {post.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </div>
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
-                        {post.author}
-                      </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogPosts.map((post) => (
+                <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
+                  <CardHeader>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {post.tags.map((tag: string) => (
+                        <Badge key={tag} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
-                    <span>{post.read_time}</span>
-                  </div>
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      {post.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </div>
+                        <div className="flex items-center">
+                          <User className="h-4 w-4 mr-1" />
+                          {post.author}
+                        </div>
+                      </div>
+                      <span>{post.read_time}</span>
+                    </div>
 
-                  <Button variant="outline" className="w-full text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-colors" asChild>
-                    <Link to={`/blog/${post.slug}`}>
-                      Read More
-                      <ExternalLink className="h-4 w-4 ml-2" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <Button variant="outline" className="w-full text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-colors" asChild>
+                      <Link to={`/blog/${post.slug}`}>
+                        Read More
+                        <ExternalLink className="h-4 w-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="text-center mt-12">
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+                  onClick={() => fetchBlogPosts(true)}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Loading More Posts...
+                    </>
+                  ) : (
+                    'Load More Posts'
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
       <Footer />
