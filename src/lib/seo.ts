@@ -155,6 +155,24 @@ export const SEO_CONFIGS = {
     ogTitle: "Dimpy Khatwani - DevOps Engineer Portfolio",
     ogDescription: "Professional DevOps Engineer with expertise in cloud automation, containerization, and scalable infrastructure."
   },
+  skills: {
+    title: "Expertise - Dimpy Khatwani | DevOps Skills",
+    description: "Explore my technical expertise in DevOps, Cloud Platforms, Containerization, CI/CD, and Infrastructure as Code.",
+    ogTitle: "Expertise - Dimpy Khatwani | DevOps Skills",
+    ogDescription: "Detailed overview of my technical skills in DevOps, Cloud Engineering, and Infrastructure Automation."
+  },
+  experience: {
+    title: "Experience - Dimpy Khatwani | Professional Journey",
+    description: "Discover my professional experience as a DevOps Engineer, including roles at Toshal Infotech, Infinity Brains, and Narola Infotech.",
+    ogTitle: "Experience - Dimpy Khatwani | Professional Journey",
+    ogDescription: "Explore my career progression and key achievements in DevOps and Cloud Engineering roles."
+  },
+  portfolio: {
+    title: "Portfolio - Dimpy Khatwani | DevOps Projects",
+    description: "View my DevOps and Cloud Engineering portfolio featuring projects with AWS, Docker, Kubernetes, and CI/CD implementations.",
+    ogTitle: "Portfolio - Dimpy Khatwani | DevOps Projects",
+    ogDescription: "Explore my portfolio of DevOps projects with detailed case studies and technical implementations."
+  },
   blog: {
     title: "Blog - Dimpy Khatwani | DevOps & Cloud Engineering",
     description: "Technical articles and tutorials on DevOps, cloud engineering, AWS, Docker, Kubernetes, and CI/CD automation.",

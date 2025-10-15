@@ -9,9 +9,9 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Expertise', href: '/#skills' },
-    { name: 'Experience', href: '/#experience' },
-    { name: 'Portfolio', href: '/#projects' },
+    { name: 'Expertise', href: '/skills' },
+    { name: 'Experience', href: '/experience' },
+    { name: 'Portfolio', href: '/portfolio' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/#contact' },
   ];
