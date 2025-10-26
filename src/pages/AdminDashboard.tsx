@@ -1,104 +1,143 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import BlogManagement from '@/components/admin/BlogManagement';
-import ProjectManagement from '@/components/admin/ProjectManagement';
-import { adminApi } from '@/lib/api';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import BlogManagement from "@/components/admin/BlogManagement";
+import ProjectManagement from "@/components/admin/ProjectManagement";
+import { adminApi } from "@/lib/api";
+import { authApi } from "@/lib/api";
 
 interface ManagementComponentProps {
   onStatsUpdate?: () => void;
 }
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
 const AdminDashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [stats, setStats] = useState({
     blogPosts: 0,
     projects: 0,
-    analytics: 0
+    analytics: 0,
   });
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // Fetch real data from API
   const fetchDashboardData = async () => {
-    if (!isLoading && user) {
+    try {
+      const token = localStorage.getItem("authToken") || "";
+
+      // Verify token is still valid
       try {
-        const token = localStorage.getItem('authToken') || '';
-        
-        // Fetch blog posts count
-        const blogResponse = await adminApi.getAdminBlogPosts(token);
-        const blogCount = blogResponse.data?.pagination?.total || 0;
-        
-        // For now, we'll use static data for projects and analytics
-        // In a real implementation, you would fetch these from their respective APIs
-        setStats({
-          blogPosts: blogCount,
-          projects: 8, // Static data for now
-          analytics: 1248 // Static data for now
-        });
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: error.message || 'Failed to fetch dashboard data',
-          variant: 'destructive',
-        });
-        console.error('Error fetching dashboard data:', error);
-        
-        // Fallback to static data
-        setStats({
-          blogPosts: 12,
-          projects: 8,
-          analytics: 1248
-        });
+        await authApi.verifyToken(token);
+      } catch (error) {
+        // Token is invalid, redirect to login
+        handleLogout();
+        return;
       }
+
+      // Fetch blog posts count
+      const blogResponse = await adminApi.getAdminBlogPosts(token);
+      const blogCount = blogResponse.data?.pagination?.total || 0;
+
+      // For now, we'll use static data for projects and analytics
+      // In a real implementation, you would fetch these from their respective APIs
+      setStats({
+        blogPosts: blogCount,
+        projects: 8, // Static data for now
+        analytics: 1248, // Static data for now
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to fetch dashboard data",
+        variant: "destructive",
+      });
+      console.error("Error fetching dashboard data:", error);
+
+      // Fallback to static data
+      setStats({
+        blogPosts: 12,
+        projects: 8,
+        analytics: 1248,
+      });
     }
   };
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      const userData = localStorage.getItem('user');
-      
+    const initializeDashboard = async () => {
+      const token = localStorage.getItem("authToken");
+      const userData = localStorage.getItem("user");
+
       if (!token || !userData) {
         toast({
-          title: 'Authentication Required',
-          description: 'Please log in to access the admin dashboard.',
-          variant: 'destructive',
+          title: "Authentication Required",
+          description: "Please log in to access the admin dashboard.",
+          variant: "destructive",
         });
-        navigate('/login');
+        navigate("/login");
+        setIsLoading(false);
         return;
       }
-      
+
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+
+        // Verify token with backend
+        try {
+          await authApi.verifyToken(token);
+          // Token is valid, fetch dashboard data
+          await fetchDashboardData();
+        } catch (error) {
+          console.error("Token verification failed:", error);
+          toast({
+            title: "Session Expired",
+            description: "Please log in again.",
+            variant: "destructive",
+          });
+          handleLogout();
+          return;
+        }
       } catch (error) {
-        console.error('Error parsing user data:', error);
-        navigate('/login');
+        console.error("Error parsing user data:", error);
+        toast({
+          title: "Session Error",
+          description: "Invalid session data. Please log in again.",
+          variant: "destructive",
+        });
+        handleLogout();
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    initializeDashboard();
   }, [navigate, toast]);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, [isLoading, user, toast]);
-
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     toast({
-      title: 'Logged Out',
-      description: 'You have been successfully logged out.',
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
     });
-    navigate('/login');
+    navigate("/login");
   };
 
   if (isLoading) {
@@ -122,30 +161,30 @@ const AdminDashboard = () => {
           </div>
         </div>
       </header>
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex space-x-4 mb-6 border-b">
           <Button
-            variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('dashboard')}
+            variant={activeTab === "dashboard" ? "default" : "ghost"}
+            onClick={() => setActiveTab("dashboard")}
           >
             Dashboard
           </Button>
           <Button
-            variant={activeTab === 'blog' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('blog')}
+            variant={activeTab === "blog" ? "default" : "ghost"}
+            onClick={() => setActiveTab("blog")}
           >
             Blog Management
           </Button>
           <Button
-            variant={activeTab === 'projects' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('projects')}
+            variant={activeTab === "projects" ? "default" : "ghost"}
+            onClick={() => setActiveTab("projects")}
           >
             Project Management
           </Button>
         </div>
-        
-        {activeTab === 'dashboard' && (
+
+        {activeTab === "dashboard" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
@@ -154,25 +193,30 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold mb-4">{stats.blogPosts}</p>
-                <Button className="w-full" onClick={() => setActiveTab('blog')}>
+                <Button className="w-full" onClick={() => setActiveTab("blog")}>
                   Manage Posts
                 </Button>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Projects</CardTitle>
-                <CardDescription>Manage your portfolio projects</CardDescription>
+                <CardDescription>
+                  Manage your portfolio projects
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold mb-4">{stats.projects}</p>
-                <Button className="w-full" onClick={() => setActiveTab('projects')}>
+                <Button
+                  className="w-full"
+                  onClick={() => setActiveTab("projects")}
+                >
                   Manage Projects
                 </Button>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Analytics</CardTitle>
@@ -185,10 +229,14 @@ const AdminDashboard = () => {
             </Card>
           </div>
         )}
-        
-        {activeTab === 'blog' && <BlogManagement onStatsUpdate={fetchDashboardData} />}
-        
-        {activeTab === 'projects' && <ProjectManagement onStatsUpdate={fetchDashboardData} />}
+
+        {activeTab === "blog" && (
+          <BlogManagement onStatsUpdate={fetchDashboardData} />
+        )}
+
+        {activeTab === "projects" && (
+          <ProjectManagement onStatsUpdate={fetchDashboardData} />
+        )}
       </div>
     </div>
   );

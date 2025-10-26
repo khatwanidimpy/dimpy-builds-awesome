@@ -43,13 +43,14 @@ export const errorHandler = (
     return;
   }
 
-  if (err.code === '23505') { // PostgreSQL unique violation
+  // Handle Prisma error codes
+  if (err.code === 'P2002') { // Unique constraint violation
     response.message = 'Resource already exists';
     res.status(409).json(response);
     return;
   }
 
-  if (err.code === '23503') { // PostgreSQL foreign key violation
+  if (err.code === 'P2003') { // Foreign key constraint failed
     response.message = 'Referenced resource not found';
     res.status(404).json(response);
     return;

@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -31,7 +31,7 @@ model BlogPost {
   excerpt       String?
   author        String
   published     Boolean  @default(false)
-  tags          String[]
+  tags          Json?
   featured_image String?
   read_time     String?
   created_at    DateTime @default(now())
@@ -44,7 +44,7 @@ model Project {
   title          String
   description    String
   content        String
-  technologies   String[]
+  technologies   Json?
   featured_image String?
   project_url    String?
   github_url     String?

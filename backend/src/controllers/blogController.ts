@@ -49,15 +49,10 @@ export const getAllBlogPosts = async (req: Request, res: Response): Promise<void
       ];
     }
 
-    // Add tags filter
-    if (tags && typeof tags === 'string') {
-      where.tags = {
-        has: tags
-      };
-    }
+    // Remove Postgres-specific array filter; we'll filter in memory for SQLite
 
-    // Get posts with pagination
-    const posts = await prisma.blogPost.findMany({
+    // Get posts without pagination first
+    const postsRaw = await prisma.blogPost.findMany({
       where,
       select: {
         id: true,
@@ -78,25 +73,29 @@ export const getAllBlogPosts = async (req: Request, res: Response): Promise<void
         {
           created_at: 'desc'
         }
-      ],
-      skip: parseInt(offset as string) || 0,
-      take: parseInt(limit as string) || 10
+      ]
     });
 
-    // Get total count for pagination
-    const totalCount = await prisma.blogPost.count({
-      where
-    });
+    // Filter by tag if provided (works with JSON array stored in SQLite)
+    let filteredPosts = postsRaw;
+    if (tags && typeof tags === 'string') {
+      filteredPosts = postsRaw.filter((p: any) => Array.isArray(p.tags) && p.tags.includes(tags));
+    }
+
+    const totalCount = filteredPosts.length;
+    const off = parseInt(offset as string) || 0;
+    const lim = parseInt(limit as string) || 10;
+    const paginatedPosts = filteredPosts.slice(off, off + lim);
 
     res.json({
       success: true,
       data: {
-        posts,
+        posts: paginatedPosts,
         pagination: {
           total: totalCount,
-          limit: parseInt(limit as string) || 10,
-          offset: parseInt(offset as string) || 0,
-          pages: Math.ceil(totalCount / (parseInt(limit as string) || 10))
+          limit: lim,
+          offset: off,
+          pages: Math.ceil(totalCount / lim)
         }
       }
     });
