@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { adminApi } from "@/lib/api";
+import { blogApi } from "@/lib/api";
 
 interface BlogPost {
   id: number;
@@ -44,7 +44,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
   const getToken = () => localStorage.getItem("authToken") || "";
 
   // Base URL for backend API (without /api prefix for image URLs)
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5001';
 
   // Function to get full image URL
   const getImageUrl = (imagePath: string | null) => {
@@ -53,8 +53,16 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    // If it's a relative path, prefix with API base URL
-    return `${API_BASE_URL}${imagePath}`;
+    // If it's a relative path starting with /uploads, prefix with API base URL
+    if (imagePath.startsWith('/uploads/')) {
+      return `${API_BASE_URL}${imagePath}`;
+    }
+    // If it looks like a filename (no path separators), construct the full path
+    if (!imagePath.includes('/') && !imagePath.includes('\\')) {
+      return `${API_BASE_URL}/uploads/${imagePath}`;
+    }
+    // For any other case, assume it's a relative path
+    return `${API_BASE_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 
   // Fetch blog posts
@@ -62,7 +70,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
     try {
       setLoading(true);
       const token = getToken();
-      const response = await adminApi.getAdminBlogPosts(token, { limit: 100 }); // Fetch more posts
+      const response = await blogApi.getAdminPosts(token, { limit: 100 }); // Fetch more posts
       setPosts(response.data?.posts || []);
     } catch (error: any) {
       toast({
@@ -96,7 +104,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
         read_time: "5 min read",
       };
 
-      const response = await adminApi.createBlogPost(token, newPost);
+      const response = await blogApi.createPost(token, newPost);
       toast({
         title: "Success",
         description: "New post created successfully",
@@ -126,7 +134,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
 
     try {
       const token = getToken();
-      const response = await adminApi.updateBlogPost(
+      const response = await blogApi.updatePost(
         token,
         selectedPost.id,
         selectedPost
@@ -160,7 +168,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
   const handleDeletePost = async (id: number) => {
     try {
       const token = getToken();
-      await adminApi.deleteBlogPost(token, id);
+      await blogApi.deletePost(token, id);
       toast({
         title: "Success",
         description: "Post deleted successfully",
@@ -220,7 +228,7 @@ const BlogManagement = ({ onStatsUpdate }: BlogManagementProps) => {
 
       // Upload the image to the server
       const token = getToken();
-      const response = await adminApi.uploadImage(token, file);
+      const response = await blogApi.uploadImage(token, file);
       
       if (response.success && response.data?.imageUrl) {
         // Set the uploaded image URL

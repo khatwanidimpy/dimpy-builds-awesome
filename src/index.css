@@ -2,95 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
+/* Professional color palette with blue accents */
 @layer base {
   :root {
-    --background: 240 33% 97%; /* #F8F8FB - Almost White */
-    --foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --card: 240 33% 97%; /* #F8F8FB - Almost White */
-    --card-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --popover: 240 33% 97%; /* #F8F8FB - Almost White */
-    --popover-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --primary: 330 100% 68%; /* #FF5C8D - Vivid Pink */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 220 15% 15%; /* Dark navy */
+    
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 220 15% 15%; /* Dark navy */
+    
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 220 15% 15%; /* Dark navy */
+    
+    /* Professional blue as primary color */
+    --primary: 220 70% 50%; /* Professional blue */
     --primary-foreground: 0 0% 100%; /* White */
-
-    --secondary: 330 100% 88%; /* #FFC1DC - Soft Pink */
-    --secondary-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --muted: 330 100% 88%; /* #FFC1DC - Soft Pink */
-    --muted-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --accent: 340 100% 85%; /* #FFB6C1 - Light Pink */
-    --accent-foreground: 0 0% 18%; /* #2E2E2E - Dark Gray */
-
-    --destructive: 330 100% 62%; /* #FF3E6C - Hot Pink */
+    
+    /* Light blue as secondary */
+    --secondary: 220 70% 90%; /* Very light blue */
+    --secondary-foreground: 220 15% 15%; /* Dark navy */
+    
+    /* Light gray for muted elements */
+    --muted: 220 10% 95%; /* Very light gray */
+    --muted-foreground: 220 10% 40%; /* Medium gray */
+    
+    /* Light accent color */
+    --accent: 220 70% 95%; /* Extremely light blue */
+    --accent-foreground: 220 15% 15%; /* Dark navy */
+    
+    --destructive: 0 84% 60%; /* Red for errors */
     --destructive-foreground: 0 0% 100%; /* White */
-
-    --border: 330 100% 88%; /* #FFC1DC - Soft Pink */
-    --input: 330 100% 88%; /* #FFC1DC - Soft Pink */
-    --ring: 330 100% 68%; /* #FF5C8D - Vivid Pink */
-
-    /* Custom portfolio tokens - Light theme */
-    --gradient-primary: linear-gradient(135deg, hsl(330 100% 68%), hsl(340 100% 85%));
-    --gradient-card: linear-gradient(145deg, hsl(240 33% 97%), hsl(330 100% 95%));
-    --glow-primary: 0 0 40px hsl(330 100% 68% / 0.2);
-    --glow-accent: 0 0 40px hsl(340 100% 85% / 0.2);
+    
+    /* Subtle borders */
+    --border: 220 30% 90%; /* Light blue-gray */
+    --input: 220 30% 85%; /* Slightly darker */
+    --ring: 220 70% 50%; /* Professional blue ring */
+    
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(220 70% 50%), hsl(220 70% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 70% 98%));
+    --glow-primary: 0 0 15px hsl(220 70% 50% / 0.2);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
+    
     --radius: 0.5rem;
-
-    --sidebar-background: 240 33% 95%;
-    --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 330 100% 68%; /* #FF5C8D - Vivid Pink */
+    
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 220 70% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 330 100% 90%;
-    --sidebar-accent-foreground: 0 0% 20%;
-    --sidebar-border: 330 100% 90%;
-    --sidebar-ring: 330 100% 68%; /* #FF5C8D - Vivid Pink */
+    --sidebar-accent: 220 70% 90%;
+    --sidebar-accent-foreground: 220 15% 20%;
+    --sidebar-border: 220 30% 90%;
+    --sidebar-ring: 220 70% 50%;
   }
-
+  
   .dark {
-    --background: 220 26% 8%;
-    --foreground: 210 40% 98%;
-
-    --card: 220 23% 12%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 220 23% 12%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 191 91% 55%;
-    --primary-foreground: 220 26% 8%;
-
-    --secondary: 220 20% 20%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 220 20% 20%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 284 86% 60%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
-    --ring: 191 91% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --background: 220 15% 10%; /* Dark navy */
+    --foreground: 0 0% 95%; /* Near white */
+    
+    --card: 220 15% 12%; /* Darker card */
+    --card-foreground: 0 0% 95%; /* Near white */
+    
+    --popover: 220 15% 12%; /* Darker popover */
+    --popover-foreground: 0 0% 95%; /* Near white */
+    
+    /* Lighter professional blue for dark mode */
+    --primary: 220 70% 60%; /* Lighter professional blue */
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    /* Darker secondary for contrast */
+    --secondary: 220 70% 30%; /* Dark blue */
+    --secondary-foreground: 0 0% 95%; /* Near white */
+    
+    /* Dark muted */
+    --muted: 220 15% 20%; /* Dark gray */
+    --muted-foreground: 220 10% 70%; /* Light gray */
+    
+    /* Dark accent */
+    --accent: 220 70% 25%; /* Darker blue */
+    --accent-foreground: 0 0% 95%; /* Near white */
+    
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 100%; /* White */
+    
+    /* Dark borders */
+    --border: 220 15% 25%; /* Dark blue-gray */
+    --input: 220 15% 30%; /* Slightly lighter */
+    --ring: 220 70% 60%; /* Lighter blue ring */
+    
+    --sidebar-background: 220 15% 12%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 220 70% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 15% 20%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 220 15% 25%;
+    --sidebar-ring: 220 70% 60%;
   }
 }
 
@@ -98,8 +105,29 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+  }
+  
+  /* Soft scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
   }
 }

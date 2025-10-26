@@ -91,6 +91,67 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 };
 
 /**
+ * Get all projects (admin)
+ */
+export const getAdminProjects = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Build where clause for filtering
+    const where: any = {};
+
+    // Add published filter if specified
+    if (req.query.published !== undefined) {
+      where.published = req.query.published === 'true';
+    }
+
+    // Add search filter if specified
+    if (req.query.search) {
+      where.OR = [
+        { title: { contains: req.query.search as string, mode: 'insensitive' } },
+        { description: { contains: req.query.search as string, mode: 'insensitive' } }
+      ];
+    }
+
+    // Parse pagination parameters
+    const limit = req.query.limit ? Math.min(parseInt(req.query.limit as string), 100) : 10;
+    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+
+    // Get projects with pagination
+    const [projects, total] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        orderBy: {
+          created_at: 'desc'
+        },
+        skip: offset,
+        take: limit
+      }),
+      prisma.project.count({ where })
+    ]);
+
+    const pages = Math.ceil(total / limit);
+
+    res.json({
+      success: true,
+      data: {
+        projects,
+        pagination: {
+          total,
+          limit,
+          offset,
+          pages
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get admin projects error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+/**
  * Create new project
  */
 export const createProject = async (req: Request, res: Response): Promise<void> => {

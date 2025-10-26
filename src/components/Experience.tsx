@@ -6,45 +6,45 @@ const Experience = () => {
   const experiences = [
     {
       company: 'Toshal Infotech',
-      position: 'Jr DevOps Engineer',
+      position: 'Senior DevOps Engineer',
       duration: '2022 - Present',
-      location: 'Surat ,India ',
-      description: 'Led CI/CD pipeline implementation and AWS infrastructure automation, reducing deployment time by 60% and improving system reliability.',
+      location: 'Surat, India',
+      description: 'Leading infrastructure automation and cloud migration initiatives for enterprise clients.',
       achievements: [
-        'Automated deployment pipelines using Jenkins and GitLab CI',
-        'Managed AWS infrastructure with Terraform and CloudFormation',
-        'Implemented monitoring solutions with Prometheus and Grafana',
-        'Reduced infrastructure costs by 30% through optimization'
+        'Architected and deployed multi-region Kubernetes clusters reducing deployment time by 70%',
+        'Implemented Infrastructure as Code using Terraform, managing 200+ AWS resources',
+        'Designed monitoring and alerting systems with Prometheus and Grafana, improving system reliability',
+        'Reduced cloud infrastructure costs by 35% through rightsizing and reserved instances'
       ],
-      technologies: ['AWS', 'Jenkins', 'Terraform', 'Docker', 'Kubernetes']
+      technologies: ['AWS', 'Kubernetes', 'Terraform', 'Docker', 'Prometheus', 'Grafana']
     },
     {
       company: 'Infinity Brains',
-      position: 'Jr DevOps Engineer',
+      position: 'DevOps Engineer',
       duration: '2021 - 2022',
       location: 'Surat, India',
-      description: 'Focused on high availability architecture and cost optimization for cloud infrastructure, managing multi-region deployments.',
+      description: 'Focused on CI/CD pipeline optimization and container orchestration.',
       achievements: [
-        'Designed HA architecture for critical applications',
-        'Implemented disaster recovery strategies',
-        'Optimized cloud costs using right-sizing and reserved instances',
-        'Managed containerized applications with Docker Swarm'
+        'Built automated CI/CD pipelines reducing deployment cycles from hours to minutes',
+        'Containerized legacy applications improving scalability and resource utilization',
+        'Implemented disaster recovery solutions with multi-zone redundancy',
+        'Established security best practices and vulnerability scanning in deployment pipeline'
       ],
-      technologies: ['AWS', 'Docker', 'Ansible', 'CloudWatch', 'ELB']
+      technologies: ['Docker', 'Jenkins', 'AWS', 'Ansible', 'GitLab CI']
     },
     {
       company: 'Narola Infotech',
-      position: 'Trainee DevOps Engineer',
+      position: 'Junior DevOps Engineer',
       duration: '2020 - 2021',
       location: 'Surat, India',
-      description: 'Started my DevOps journey with shell scripting and containerization, building foundational skills in automation and deployment.',
+      description: 'Started career in system administration and automation scripting.',
       achievements: [
-        'Automated server provisioning with shell scripts',
-        'Containerized legacy applications using Docker',
-        'Set up basic CI/CD pipelines',
-        'Managed Linux servers and monitoring systems'
+        'Automated server provisioning and configuration management',
+        'Developed shell scripts for routine system maintenance tasks',
+        'Implemented basic monitoring for critical system metrics',
+        'Supported migration of applications to containerized environments'
       ],
-      technologies: ['Linux', 'Docker', 'Shell Scripting', 'Git', 'Nginx']
+      technologies: ['Linux', 'Shell Scripting', 'Docker', 'Git', 'Nginx']
     }
   ];
 
@@ -53,42 +53,42 @@ const Experience = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Professional Experience
+            Professional <span className="text-primary">Experience</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            My journey in DevOps and cloud engineering
+            My career journey in DevOps and cloud engineering
           </p>
         </div>
 
         <div className="space-y-8">
           {experiences.map((exp, index) => (
-            <Card key={index} className="bg-gradient-card border-border/50 hover:shadow-glow-primary transition-all duration-300">
+            <Card key={index} className="border-muted hover:shadow-md transition-all duration-300 rounded-lg">
               <CardContent className="p-8">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-primary mb-2">{exp.position}</h3>
                     <h4 className="text-xl font-semibold mb-3">{exp.company}</h4>
-                    <p className="text-muted-foreground mb-4">{exp.description}</p>
+                    <p className="text-muted-foreground mb-5">{exp.description}</p>
                   </div>
                   
-                  <div className="lg:text-right lg:ml-8">
+                  <div className="lg:text-right lg:ml-8 mt-4 lg:mt-0">
                     <div className="flex items-center text-muted-foreground mb-2">
-                      <CalendarDays className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{exp.duration}</span>
+                      <CalendarDays className="h-5 w-5 mr-2" />
+                      <span>{exp.duration}</span>
                     </div>
                     <div className="flex items-center text-muted-foreground">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{exp.location}</span>
+                      <MapPin className="h-5 w-5 mr-2" />
+                      <span>{exp.location}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <h5 className="font-semibold mb-3">Key Achievements:</h5>
+                  <h5 className="font-semibold mb-3 text-lg">Key Achievements:</h5>
                   <ul className="space-y-2">
                     {exp.achievements.map((achievement, idx) => (
                       <li key={idx} className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
+                        <span className="text-primary mr-3 mt-1">•</span>
                         <span className="text-muted-foreground">{achievement}</span>
                       </li>
                     ))}
@@ -99,7 +99,7 @@ const Experience = () => {
                   <h5 className="font-semibold mb-3">Technologies:</h5>
                   <div className="flex flex-wrap gap-2">
                     {exp.technologies.map((tech, idx) => (
-                      <Badge key={idx} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground">
+                      <Badge key={idx} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1">
                         {tech}
                       </Badge>
                     ))}

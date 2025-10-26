@@ -1,10 +1,12 @@
-import { Calendar, User, ExternalLink } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { Calendar, User, ExternalLink } from 'lucide-react';
 import { blogApi } from '@/lib/api';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 interface BlogPost {
@@ -36,14 +38,14 @@ interface BlogResponse {
   };
 }
 
-const Blog = () => {
+const BlogList = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
-  const limit = 6; // Load 6 posts at a time
+  const limit = 9; // Load 9 posts at a time
 
   useEffect(() => {
     updateMetaTags(SEO_CONFIGS.blog);
@@ -89,12 +91,13 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <section id="blog" className="py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Professional <span className="text-primary">Insights</span>
-            </h2>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              All <span className="text-primary">Blog Posts</span>
+            </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Technical articles and industry perspectives
             </p>
@@ -103,18 +106,20 @@ const Blog = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         </div>
-      </section>
+        <Footer />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section id="blog" className="py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Latest <span className="text-primary">Blog Posts</span>
-            </h2>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              All <span className="text-primary">Blog Posts</span>
+            </h1>
             <p className="text-lg text-destructive max-w-2xl mx-auto">
               Error: {error}
             </p>
@@ -131,17 +136,19 @@ const Blog = () => {
             </div>
           </div>
         </div>
-      </section>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <section id="blog" className="py-20 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Latest <span className="text-primary">Blog Posts</span>
-          </h2>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            All <span className="text-primary">Blog Posts</span>
+          </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Sharing insights, tutorials, and best practices from my DevOps journey
           </p>
@@ -154,20 +161,11 @@ const Blog = () => {
               <p className="text-muted-foreground mb-6">
                 I'm currently working on some exciting blog posts about DevOps, cloud infrastructure, and automation. Stay tuned!
               </p>
-              <Button 
-                variant="outline" 
-                asChild
-              >
-                <Link to="/blog">
-                  View All Posts
-                  <ExternalLink className="h-4 w-4 ml-2" />
-                </Link>
-              </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.map((post) => (
                 <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
                   <CardHeader>
@@ -216,8 +214,8 @@ const Blog = () => {
               ))}
             </div>
 
-            <div className="text-center">
-              {hasMore ? (
+            {hasMore && (
+              <div className="text-center mt-12">
                 <Button 
                   variant="default" 
                   size="lg"
@@ -228,31 +226,20 @@ const Blog = () => {
                   {loadingMore ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Loading...
+                      Loading More Posts...
                     </>
                   ) : (
                     'Load More Posts'
                   )}
                 </Button>
-              ) : (
-                <Button 
-                  variant="default" 
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-                  asChild
-                >
-                  <Link to="/blog">
-                    View All Posts
-                    <ExternalLink className="h-4 w-4 ml-2" />
-                  </Link>
-                </Button>
-              )}
-            </div>
+              </div>
+            )}
           </>
         )}
       </div>
-    </section>
+      <Footer />
+    </div>
   );
 };
 
-export default Blog;
+export default BlogList;

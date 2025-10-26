@@ -14,7 +14,8 @@
     "backend:start": "cd backend && npm start",
     "generate-jwt": "cd backend && npm run generate-jwt",
     "setup:full": "npm install && cd backend && npm install",
-    "dev:full": "concurrently \"npm run dev\" \"npm run backend:dev\" --names \"frontend,backend\" --prefix-colors \"cyan,magenta\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run backend:dev\" --names \"frontend,backend\" --prefix-colors \"cyan,magenta\"",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

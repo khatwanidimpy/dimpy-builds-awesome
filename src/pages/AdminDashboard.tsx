@@ -11,8 +11,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import BlogManagement from "@/components/admin/BlogManagement";
 import ProjectManagement from "@/components/admin/ProjectManagement";
-import { adminApi } from "@/lib/api";
-import { authApi } from "@/lib/api";
+import { authApi, blogApi } from "@/lib/api";
 
 interface ManagementComponentProps {
   onStatsUpdate?: () => void;
@@ -52,7 +51,7 @@ const AdminDashboard = () => {
       }
 
       // Fetch blog posts count
-      const blogResponse = await adminApi.getAdminBlogPosts(token);
+      const blogResponse = await blogApi.getAdminPosts(token);
       const blogCount = blogResponse.data?.pagination?.total || 0;
 
       // For now, we'll use static data for projects and analytics

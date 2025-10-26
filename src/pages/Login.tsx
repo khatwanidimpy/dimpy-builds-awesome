@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { authApi } from "@/lib/api";
+import { updateMetaTags, SEO_CONFIGS } from '@/lib/seo';
 
 const Login = () => {
   const [username, setUsername] = useState("admin");
@@ -83,10 +84,13 @@ const Login = () => {
     }
   };
 
+  // Set SEO for login page
+  updateMetaTags(SEO_CONFIGS.login);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+        <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             Admin Login
           </CardTitle>
@@ -101,10 +105,10 @@ const Login = () => {
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -112,10 +116,10 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
           </CardContent>
@@ -123,11 +127,6 @@ const Login = () => {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              <Link to="/" className="hover:underline">
-                Back to Home
-              </Link>
-            </div>
           </CardFooter>
         </form>
       </Card>
