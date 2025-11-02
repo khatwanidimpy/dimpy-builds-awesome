@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import {
   CreateBlogPostData,
   UpdateBlogPostData,
@@ -11,8 +10,7 @@ import {
   extractExcerpt,
   sanitizeString
 } from '../utils/helpers';
-
-const prisma = new PrismaClient();
+import { BlogPostModel } from '../models/blogPostModel';
 
 /**
  * Get All Blog Posts (Public - only published posts)
@@ -26,76 +24,41 @@ export const getAllBlogPosts = async (req: Request, res: Response): Promise<void
       offset = '0'
     } = req.query;
 
-    // Build where clause
-    const where: any = {
+    // Build filters
+    const filters: any = {
       published: true
     };
 
     // Add search filter
     if (search && typeof search === 'string') {
-      where.OR = [
-        {
-          title: {
-            contains: search,
-            mode: 'insensitive'
-          }
-        },
-        {
-          excerpt: {
-            contains: search,
-            mode: 'insensitive'
-          }
-        }
-      ];
+      filters.search = search;
     }
 
-    // Remove Postgres-specific array filter; we'll filter in memory for SQLite
-
-    // Get posts without pagination first
-    const postsRaw = await prisma.blogPost.findMany({
-      where,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        author: true,
-        tags: true,
-        featured_image: true,
-        read_time: true,
-        created_at: true,
-        published_at: true
-      },
-      orderBy: [
-        {
-          published_at: 'desc'
-        },
-        {
-          created_at: 'desc'
-        }
-      ]
-    });
-
-    // Filter by tag if provided (works with JSON array stored in SQLite)
-    let filteredPosts = postsRaw;
+    // Add tags filter
     if (tags && typeof tags === 'string') {
-      filteredPosts = postsRaw.filter((p: any) => Array.isArray(p.tags) && p.tags.includes(tags));
+      filters.tags = [tags];
     }
 
-    const totalCount = filteredPosts.length;
-    const off = parseInt(offset as string) || 0;
-    const lim = parseInt(limit as string) || 10;
-    const paginatedPosts = filteredPosts.slice(off, off + lim);
+    // Add pagination
+    filters.limit = parseInt(limit as string) || 10;
+    filters.offset = parseInt(offset as string) || 0;
 
+    // Get posts
+    const posts = await BlogPostModel.findAll(filters);
+    const totalCount = await BlogPostModel.count({ published: true, search: search as string });
+
+    const limitNum = parseInt(limit as string) || 10;
+    const offsetNum = parseInt(offset as string) || 0;
+    
     res.json({
       success: true,
       data: {
-        posts: paginatedPosts,
+        posts,
         pagination: {
           total: totalCount,
-          limit: lim,
-          offset: off,
-          pages: Math.ceil(totalCount / lim)
+          limit: limitNum,
+          offset: offsetNum,
+          pages: Math.ceil(totalCount / limitNum)
         }
       }
     });
@@ -124,12 +87,7 @@ export const getBlogPostBySlug = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    const post = await prisma.blogPost.findFirst({
-      where: {
-        slug,
-        published: true
-      }
-    });
+    const post = await BlogPostModel.findBySlug(slug);
 
     if (!post) {
       res.status(404).json({
@@ -167,49 +125,30 @@ export const getAdminBlogPosts = async (req: Request, res: Response): Promise<vo
       offset = '0'
     } = req.query;
 
-    // Build where clause
-    const where: any = {};
+    // Build filters
+    const filters: any = {};
 
     // Add published filter
     if (published !== undefined) {
-      where.published = published === 'true';
+      filters.published = published === 'true';
     }
 
     // Add search filter
     if (search && typeof search === 'string') {
-      where.OR = [
-        {
-          title: {
-            contains: search,
-            mode: 'insensitive'
-          }
-        },
-        {
-          content: {
-            contains: search,
-            mode: 'insensitive'
-          }
-        }
-      ];
+      filters.search = search;
     }
 
-    // Parse pagination parameters
+    // Add pagination
+    filters.limit = parseInt(limit as string) || 10;
+    filters.offset = parseInt(offset as string) || 0;
+
+    // Get posts and count
+    const posts = await BlogPostModel.findAll(filters);
+    const totalCount = await BlogPostModel.count(filters);
+
     const limitNum = parseInt(limit as string) || 10;
     const offsetNum = parseInt(offset as string) || 0;
-
-    // Get posts with pagination
-    const [posts, totalCount] = await Promise.all([
-      prisma.blogPost.findMany({
-        where,
-        orderBy: {
-          created_at: 'desc'
-        },
-        skip: offsetNum,
-        take: limitNum
-      }),
-      prisma.blogPost.count({ where })
-    ]);
-
+    
     res.json({
       success: true,
       data: {
@@ -266,11 +205,7 @@ export const createBlogPost = async (req: Request, res: Response): Promise<void>
     let slug = baseSlug;
     let counter = 1;
     while (true) {
-      const existingSlug = await prisma.blogPost.findUnique({
-        where: {
-          slug
-        }
-      });
+      const existingSlug = await BlogPostModel.findBySlug(slug);
       if (!existingSlug) break;
       slug = `${baseSlug}-${counter}`;
       counter++;
@@ -283,19 +218,15 @@ export const createBlogPost = async (req: Request, res: Response): Promise<void>
     const finalReadTime = read_time || calculateReadTime(content);
 
     // Insert blog post
-    const post = await prisma.blogPost.create({
-      data: {
-        title: sanitizeString(title),
-        slug,
-        content, // Don't sanitize content as it may contain HTML
-        excerpt: finalExcerpt,
-        author,
-        published,
-        tags,
-        featured_image,
-        read_time: finalReadTime,
-        published_at: published ? new Date() : null
-      }
+    const post = await BlogPostModel.create({
+      title: sanitizeString(title),
+      content, // Don't sanitize content as it may contain HTML
+      excerpt: finalExcerpt,
+      author,
+      published,
+      tags,
+      featured_image,
+      read_time: finalReadTime
     });
 
     res.status(201).json({
@@ -332,11 +263,7 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
     }
 
     // Check if blog post exists
-    const existingPost = await prisma.blogPost.findUnique({
-      where: {
-        id: parseInt(id)
-      }
-    });
+    const existingPost = await BlogPostModel.findById(parseInt(id));
 
     if (!existingPost) {
       res.status(404).json({
@@ -361,15 +288,9 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
       let counter = 1;
 
       while (true) {
-        const existingSlug = await prisma.blogPost.findFirst({
-          where: {
-            slug: newSlug,
-            NOT: {
-              id: parseInt(id)
-            }
-          }
-        });
-        if (!existingSlug) break;
+        const existingSlug = await BlogPostModel.findBySlug(newSlug);
+        // Check if the existing slug belongs to a different post
+        if (!existingSlug || existingSlug.id === parseInt(id)) break;
         newSlug = `${baseSlug}-${counter}`;
         counter++;
       }
@@ -416,12 +337,7 @@ export const updateBlogPost = async (req: Request, res: Response): Promise<void>
     }
 
     // Update the blog post
-    const post = await prisma.blogPost.update({
-      where: {
-        id: parseInt(id)
-      },
-      data
-    });
+    const post = await BlogPostModel.update(parseInt(id), data);
 
     res.json({
       success: true,
@@ -456,15 +372,7 @@ export const deleteBlogPost = async (req: Request, res: Response): Promise<void>
     }
 
     // Check if blog post exists
-    const existingPost = await prisma.blogPost.findUnique({
-      where: {
-        id: parseInt(id)
-      },
-      select: {
-        id: true,
-        title: true
-      }
-    });
+    const existingPost = await BlogPostModel.findById(parseInt(id));
 
     if (!existingPost) {
       res.status(404).json({
@@ -475,11 +383,7 @@ export const deleteBlogPost = async (req: Request, res: Response): Promise<void>
     }
 
     // Delete the blog post
-    await prisma.blogPost.delete({
-      where: {
-        id: parseInt(id)
-      }
-    });
+    await BlogPostModel.delete(parseInt(id));
 
     res.json({
       success: true,
@@ -510,11 +414,7 @@ export const getBlogPostById = async (req: Request, res: Response): Promise<void
       return;
     }
 
-    const post = await prisma.blogPost.findUnique({
-      where: {
-        id: parseInt(id)
-      }
-    });
+    const post = await BlogPostModel.findById(parseInt(id));
 
     if (!post) {
       res.status(404).json({

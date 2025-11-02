@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
 import { LoginCredentials } from '../models/User';
 import { generateToken } from '../middleware/auth';
 import { sanitizeString } from '../utils/helpers';
-
-const prisma = new PrismaClient();
+import { UserModel } from '../models/userModel';
 
 /**
  * Login Controller
@@ -27,11 +25,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const sanitizedUsername = sanitizeString(username);
 
     // Find user in database
-    const user = await prisma.user.findUnique({
-      where: {
-        username: sanitizedUsername
-      }
-    });
+    const user = await UserModel.findByUsername(sanitizedUsername);
 
     if (!user) {
       res.status(401).json({
@@ -118,18 +112,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: req.user.userId
-      },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        created_at: true
-      }
-    });
+    const user = await UserModel.findById(req.user.userId);
 
     if (!user) {
       res.status(404).json({

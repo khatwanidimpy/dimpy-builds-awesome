@@ -128,6 +128,9 @@ app.use(errorHandler);
 // Initialize database and start server
 const startServer = async (): Promise<void> => {
   try {
+    // Test database connection
+    const db = require('./config/database').default;
+    
     // Start server
     app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);

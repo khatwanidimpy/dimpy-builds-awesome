@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { CreateProjectData, UpdateProjectData } from '../models/Project';
 import { sanitizeString } from '../utils/helpers';
-
-const prisma = new PrismaClient();
+import { ProjectModel } from '../models/projectModel';
 
 /**
  * Get all projects
@@ -13,17 +11,12 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
     // Check if we should only return published projects
     const publishedOnly = req.query.published === 'true';
 
-    const where: any = {};
+    const filters: any = {};
     if (publishedOnly) {
-      where.published = true;
+      filters.published = true;
     }
 
-    const projects = await prisma.project.findMany({
-      where,
-      orderBy: {
-        created_at: 'desc'
-      }
-    });
+    const projects = await ProjectModel.findAll(filters);
 
     res.json({
       success: true,
@@ -61,11 +54,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    const project = await prisma.project.findUnique({
-      where: {
-        id: parseInt(id)
-      }
-    });
+    const project = await ProjectModel.findById(parseInt(id));
 
     if (!project) {
       res.status(404).json({
@@ -95,38 +84,30 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
  */
 export const getAdminProjects = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Build where clause for filtering
-    const where: any = {};
+    // Build filters for filtering
+    const filters: any = {};
 
     // Add published filter if specified
     if (req.query.published !== undefined) {
-      where.published = req.query.published === 'true';
+      filters.published = req.query.published === 'true';
     }
 
     // Add search filter if specified
     if (req.query.search) {
-      where.OR = [
-        { title: { contains: req.query.search as string, mode: 'insensitive' } },
-        { description: { contains: req.query.search as string, mode: 'insensitive' } }
-      ];
+      filters.search = req.query.search as string;
     }
 
     // Parse pagination parameters
     const limit = req.query.limit ? Math.min(parseInt(req.query.limit as string), 100) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
-    // Get projects with pagination
-    const [projects, total] = await Promise.all([
-      prisma.project.findMany({
-        where,
-        orderBy: {
-          created_at: 'desc'
-        },
-        skip: offset,
-        take: limit
-      }),
-      prisma.project.count({ where })
-    ]);
+    // Add pagination to filters
+    filters.limit = limit;
+    filters.offset = offset;
+
+    // Get projects and total count
+    const projects = await ProjectModel.findAll(filters);
+    const total = await ProjectModel.count(filters);
 
     const pages = Math.ceil(total / limit);
 
@@ -187,18 +168,28 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
     const sanitizedProjectUrl = project_url ? sanitizeString(project_url) : null;
     const sanitizedGithubUrl = github_url ? sanitizeString(github_url) : null;
 
-    const project = await prisma.project.create({
-      data: {
-        title: sanitizedTitle,
-        description: sanitizedDescription,
-        content: sanitizedContent,
-        technologies: sanitizedTechnologies,
-        featured_image: sanitizedFeaturedImage,
-        project_url: sanitizedProjectUrl,
-        github_url: sanitizedGithubUrl,
-        published
-      }
-    });
+    const projectData: any = {
+      title: sanitizedTitle,
+      description: sanitizedDescription,
+      content: sanitizedContent,
+      technologies: sanitizedTechnologies,
+      published
+    };
+
+    // Only add properties if they are not null
+    if (sanitizedFeaturedImage !== null) {
+      projectData.featured_image = sanitizedFeaturedImage;
+    }
+
+    if (sanitizedProjectUrl !== null) {
+      projectData.project_url = sanitizedProjectUrl;
+    }
+
+    if (sanitizedGithubUrl !== null) {
+      projectData.github_url = sanitizedGithubUrl;
+    }
+
+    const project = await ProjectModel.create(projectData);
 
     res.status(201).json({
       success: true,
@@ -293,12 +284,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const project = await prisma.project.update({
-      where: {
-        id: parseInt(id)
-      },
-      data
-    });
+    const project = await ProjectModel.update(parseInt(id), data);
 
     if (!project) {
       res.status(404).json({
@@ -339,13 +325,8 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const project = await prisma.project.delete({
-      where: {
-        id: parseInt(id)
-      }
-    });
-
-    if (!project) {
+    const deleted = await ProjectModel.delete(parseInt(id));
+    if (!deleted) {
       res.status(404).json({
         success: false,
         message: 'Project not found'

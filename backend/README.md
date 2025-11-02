@@ -1,6 +1,6 @@
 # Portfolio Backend API
 
-A robust Node.js/Express backend for the portfolio website with JWT authentication, PostgreSQL database, and complete blog management system.
+A robust Node.js/Express backend for the portfolio website with JWT authentication, MySQL database, and complete blog management system.
 
 ## 🚀 Features
 
@@ -22,8 +22,7 @@ A robust Node.js/Express backend for the portfolio website with JWT authenticati
 
 - **Database**
 
-  - PostgreSQL with connection pooling
-  - Auto-generated schemas
+  - MySQL with connection pooling
   - Data validation
   - Database migrations
 
@@ -36,7 +35,7 @@ A robust Node.js/Express backend for the portfolio website with JWT authenticati
 ## 📋 Prerequisites
 
 - Node.js (v16 or higher)
-- PostgreSQL (v12 or higher)
+- MySQL (v8.0 or higher)
 - npm or yarn
 
 ## 🛠️ Installation
@@ -77,20 +76,22 @@ CREATE DATABASE portfolio_db;
 Update `backend/.env` with your configuration:
 
 ```env
-# Environment
-NODE_ENV=development
-PORT=5000
-
-# Prisma Database URL
-DATABASE_URL=your_database_url
+# Database Configuration
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=portfolio_db
 
 # JWT Configuration
-JWT_SECRET=your_super_secure_jwt_secret_key_here_at_least_64_characters_long
-JWT_EXPIRES_IN=7d
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=24h
 
-# Admin Credentials
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# Frontend URL
+FRONTEND_URL=http://localhost:5173
 ```
 
 **⚠️ Important:** Change the default admin credentials in production!
@@ -242,34 +243,53 @@ curl -X GET http://localhost:5000/api/blog/admin/posts \\n  -H \"Authorization: 
 ### Users Table
 
 ```sql
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(50) UNIQUE NOT NULL,
+CREATE TABLE User (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   email VARCHAR(255),
-  role VARCHAR(20) DEFAULT 'admin',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  role VARCHAR(50) NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
 
 ### Blog Posts Table
 
 ```sql
-CREATE TABLE blog_posts (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE BlogPost (
+  id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) UNIQUE NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,
   content TEXT NOT NULL,
   excerpt TEXT,
-  author VARCHAR(100) NOT NULL,
-  published BOOLEAN DEFAULT false,
-  tags TEXT[] DEFAULT '{}',
-  featured_image VARCHAR(500),
-  read_time VARCHAR(20),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  published_at TIMESTAMP
+  author VARCHAR(255) NOT NULL,
+  published BOOLEAN NOT NULL DEFAULT false,
+  tags JSON,
+  featured_image VARCHAR(255),
+  read_time VARCHAR(50),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  published_at TIMESTAMP NULL
+);
+```
+
+### Projects Table
+
+```sql
+CREATE TABLE Project (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  content TEXT NOT NULL,
+  technologies JSON,
+  featured_image VARCHAR(255),
+  project_url VARCHAR(255),
+  github_url VARCHAR(255),
+  published BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  published_at TIMESTAMP NULL
 );
 ```
 
@@ -330,34 +350,34 @@ npm run setup:full # Install all dependencies
 
 ### Database Connection Issues
 
-1. **Check PostgreSQL is running**
+1. **Check MySQL is running**
 
    ```bash
    # Windows (if installed as service)
-   net start postgresql-x64-13
+   net start mysql
 
    # Check if process is running
-   tasklist /fi \"imagename eq postgres.exe\"
+   tasklist /fi "imagename eq mysqld.exe"
    ```
 
 2. **Verify database exists**
 
    ```bash
-   psql -U postgres -l
+   mysql -u root -p -e "SHOW DATABASES;"
    ```
 
 3. **Check connection parameters in .env**
 
 ### Common Errors
 
-- **\"JWT_SECRET not configured\"**: Set JWT_SECRET in .env file
-- **\"Database connection failed\"**: Check PostgreSQL service and credentials
-- **\"Port already in use\"**: Change PORT in .env or stop conflicting process
-- **\"Invalid credentials\"**: Verify admin username/password in .env
+- **"JWT_SECRET not configured"**: Set JWT_SECRET in .env file
+- **"Database connection failed"**: Check MySQL service and credentials
+- **"Port already in use"**: Change PORT in .env or stop conflicting process
+- **"Invalid credentials"**: Verify admin username/password in .env
 
 ## 📚 Additional Resources
 
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
 - [Express.js Guide](https://expressjs.com/)
 - [JWT.io](https://jwt.io/)
 - [Helmet.js](https://helmetjs.github.io/)
