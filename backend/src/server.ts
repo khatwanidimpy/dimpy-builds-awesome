@@ -42,7 +42,8 @@ app.use(cors({
     'http://localhost:3000', // React dev server
     'http://localhost:8081',
     'http://localhost:8080', // Additional dev server port
-    'https://dimpykhatwani.dev', // Production domain
+    'https://dimpykhatwani.com',
+     'https://dimpyapi.dheergupta.in/', // Production domain
     process.env.FRONTEND_URL // Environment variable
   ].filter((url): url is string => Boolean(url)),
   credentials: true,

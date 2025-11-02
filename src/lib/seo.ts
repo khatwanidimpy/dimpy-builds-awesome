@@ -24,7 +24,7 @@ const DEFAULT_SEO: SEOConfig = {
   ogTitle: "Dimpy Khatwani - DevOps Engineer Portfolio",
   ogDescription: "Professional DevOps Engineer with expertise in cloud automation, containerization, and scalable infrastructure.",
   ogImage: "/og-image.jpg",
-  ogUrl: "https://dimpykhatwani.dev",
+  ogUrl: "https://dimpykhatwani.com/",
   twitterCard: "summary_large_image",
   author: "Dimpy Khatwani"
 };

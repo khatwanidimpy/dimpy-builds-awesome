@@ -34,9 +34,9 @@ const Contact = () => {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 py-6 text-base" 
                   asChild
                 >
-                  <a href="mailto:dimpy@dimpykhatwani.dev">
+                  <a href="mailto:khatwanidimpy@gmail.com">
                     <Mail className="mr-2 h-5 w-5" />
-                    dimpy@dimpykhatwani.dev
+                    khatwanidimpy@gmail.com
                   </a>
                 </Button>
                 
@@ -45,10 +45,6 @@ const Contact = () => {
                   className="w-full border-primary text-primary hover:bg-primary/10 transition-all duration-300 py-6 text-base"
                   asChild
                 >
-                  <a href="https://calendly.com/dimpy-khatwani" target="_blank" rel="noopener noreferrer">
-                    <Calendar className="mr-2 h-5 w-5" />
-                    Schedule a Meeting
-                  </a>
                 </Button>
                 
                 <Button 

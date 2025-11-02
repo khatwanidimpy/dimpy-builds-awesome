@@ -13,7 +13,7 @@ const structuredData = {
   "name": "Dimpy Khatwani",
   "jobTitle": "DevOps Engineer",
   "description": "DevOps Engineer specializing in AWS, Docker, Kubernetes, and CI/CD automation",
-  "url": "https://dimpykhatwani.dev",
+  "url": "https://dimpykhatwani.com/",
   "sameAs": [
     "https://linkedin.com/in/dimpykhatwani",
     "https://github.com/dimpykhatwani"
