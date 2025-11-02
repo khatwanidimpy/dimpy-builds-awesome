@@ -8,12 +8,13 @@ const seedDatabase = async () => {
   let connection: mysql.Connection | null = null;
   
   try {
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'portfolio_db'
-    });
+      connection = await mysql.createConnection({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'portfolio_db'
+      });
 
     // Check if admin user already exists
     const [rows] = await connection.execute(
