@@ -57,7 +57,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 100000, // Limit each IP to 100 requests per windowMs
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
@@ -71,7 +71,7 @@ app.use(limiter);
 // Stricter rate limiting for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 auth requests per windowMs
+  max: 50000, // Limit each IP to 5 auth requests per windowMs
   message: {
     success: false,
     message: 'Too many authentication attempts, please try again later.'
@@ -131,7 +131,7 @@ const startServer = async (): Promise<void> => {
   try {
     // Test database connection
     const db = require('./config/database').default;
-    
+
     // Start server
     app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);
