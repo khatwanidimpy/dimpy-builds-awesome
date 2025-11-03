@@ -1,5 +1,6 @@
 import pool from '../config/database';
 import { Project, CreateProjectData, UpdateProjectData } from './Project';
+import { RowDataPacket } from 'mysql2/promise';
 
 export class ProjectModel {
   static async findAll(filters: any = {}): Promise<Project[]> {
@@ -24,7 +25,13 @@ export class ProjectModel {
     }
 
     const [rows] = await pool.execute(query, params);
-    return rows as Project[];
+    // Parse the technologies field from JSON string to array
+    return (rows as RowDataPacket[]).map(row => ({
+      ...row,
+      technologies: typeof row.technologies === 'string'
+        ? JSON.parse(row.technologies)
+        : row.technologies || []
+    })) as Project[];
   }
 
   static async findById(id: number): Promise<Project | null> {
@@ -34,7 +41,14 @@ export class ProjectModel {
     );
 
     if (Array.isArray(rows) && rows.length > 0) {
-      return rows[0] as Project;
+      const row = rows[0] as RowDataPacket;
+      // Parse the technologies field from JSON string to array
+      return {
+        ...row,
+        technologies: typeof row.technologies === 'string'
+          ? JSON.parse(row.technologies)
+          : row.technologies || []
+      } as Project;
     }
     return null;
   }
@@ -61,12 +75,19 @@ export class ProjectModel {
       [title, description, content, JSON.stringify(technologies), safeFeaturedImage, safeProjectUrl, safeGithubUrl, published]
     );
 
-    const [rows] = await pool.execute(
+    const [rows]: [RowDataPacket[], any] = await pool.execute(
       'SELECT * FROM Project WHERE id = ?',
       [result.insertId]
     );
 
-    return (rows as Project[])[0];
+    const row = rows[0];
+    // Parse the technologies field from JSON string to array
+    return {
+      ...row,
+      technologies: typeof row.technologies === 'string'
+        ? JSON.parse(row.technologies)
+        : row.technologies || []
+    } as Project;
   }
 
   static async update(id: number, projectData: UpdateProjectData): Promise<Project | null> {
@@ -117,7 +138,7 @@ export class ProjectModel {
       params.push(filters.published);
     }
 
-    const [rows] = await pool.execute(query, params);
-    return (rows as any[])[0].count;
+    const [rows]: [RowDataPacket[], any] = await pool.execute(query, params);
+    return rows[0].count as number;
   }
 }

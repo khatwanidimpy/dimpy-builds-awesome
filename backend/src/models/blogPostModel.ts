@@ -1,5 +1,6 @@
 import pool from '../config/database';
 import { BlogPost, CreateBlogPostData, UpdateBlogPostData } from './BlogPost';
+import { RowDataPacket } from 'mysql2/promise';
 
 export class BlogPostModel {
   static async findAll(filters: any = {}): Promise<BlogPost[]> {
@@ -34,7 +35,13 @@ export class BlogPostModel {
     }
 
     const [rows] = await pool.execute(query, params);
-    return rows as BlogPost[];
+    // Parse the tags field from JSON string to array
+    return (rows as RowDataPacket[]).map(row => ({
+      ...row,
+      tags: typeof row.tags === 'string' 
+        ? JSON.parse(row.tags) 
+        : row.tags || []
+    })) as BlogPost[];
   }
 
   static async findBySlug(slug: string): Promise<BlogPost | null> {
@@ -44,7 +51,14 @@ export class BlogPostModel {
     );
 
     if (Array.isArray(rows) && rows.length > 0) {
-      return rows[0] as BlogPost;
+      const row = rows[0] as RowDataPacket;
+      // Parse the tags field from JSON string to array
+      return {
+        ...row,
+        tags: typeof row.tags === 'string' 
+          ? JSON.parse(row.tags) 
+          : row.tags || []
+      } as BlogPost;
     }
     return null;
   }
@@ -56,7 +70,14 @@ export class BlogPostModel {
     );
 
     if (Array.isArray(rows) && rows.length > 0) {
-      return rows[0] as BlogPost;
+      const row = rows[0] as RowDataPacket;
+      // Parse the tags field from JSON string to array
+      return {
+        ...row,
+        tags: typeof row.tags === 'string' 
+          ? JSON.parse(row.tags) 
+          : row.tags || []
+      } as BlogPost;
     }
     return null;
   }
@@ -86,12 +107,19 @@ export class BlogPostModel {
       [title, slug, content, safeExcerpt, author, published, JSON.stringify(tags), safeFeaturedImage, safeReadTime]
     );
 
-    const [rows] = await pool.execute(
+    const [rows]: [RowDataPacket[], any] = await pool.execute(
       'SELECT * FROM BlogPost WHERE id = ?',
       [result.insertId]
     );
 
-    return (rows as BlogPost[])[0];
+    const row = rows[0];
+    // Parse the tags field from JSON string to array
+    return {
+      ...row,
+      tags: typeof row.tags === 'string' 
+        ? JSON.parse(row.tags) 
+        : row.tags || []
+    } as BlogPost;
   }
 
   static async update(id: number, postData: UpdateBlogPostData): Promise<BlogPost | null> {
@@ -152,7 +180,7 @@ export class BlogPostModel {
       params.push(`%${filters.search}%`, `%${filters.search}%`);
     }
 
-    const [rows] = await pool.execute(query, params);
-    return (rows as any[])[0].count;
+    const [rows]: [RowDataPacket[], any] = await pool.execute(query, params);
+    return rows[0].count as number;
   }
 }
