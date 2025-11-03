@@ -144,99 +144,103 @@ const BlogList = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            All <span className="text-primary">Blog Posts</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Sharing insights, tutorials, and best practices from my DevOps journey
-          </p>
-        </div>
+      <main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+          <header className="text-center mb-16">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              All <span className="text-primary">Blog Posts</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Sharing insights, tutorials, and best practices from my DevOps journey
+            </p>
+          </header>
 
-        {blogPosts.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <h3 className="text-xl font-semibold mb-4">No Blog Posts Yet</h3>
-              <p className="text-muted-foreground mb-6">
-                I'm currently working on some exciting blog posts about DevOps, cloud infrastructure, and automation. Stay tuned!
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post) => (
-                <Card key={post.id} className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg">
-                  <CardHeader>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {post.tags.map((tag: string) => (
-                        <Badge key={tag} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                      {post.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      {post.excerpt}
-                    </p>
-                    
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </div>
-                        <div className="flex items-center">
-                          <User className="h-4 w-4 mr-1" />
-                          {post.author}
-                        </div>
-                      </div>
-                      <span>{post.read_time}</span>
-                    </div>
-
-                    <Button variant="outline" className="w-full text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-colors" asChild>
-                      <Link to={`/blog/${post.slug}`}>
-                        Read More
-                        <ExternalLink className="h-4 w-4 ml-2" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {hasMore && (
-              <div className="text-center mt-12">
-                <Button 
-                  variant="default" 
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-                  onClick={() => fetchBlogPosts(true)}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Loading More Posts...
-                    </>
-                  ) : (
-                    'Load More Posts'
-                  )}
-                </Button>
+          {blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="max-w-md mx-auto">
+                <h2 className="text-xl font-semibold mb-4">No Blog Posts Yet</h2>
+                <p className="text-muted-foreground mb-6">
+                  I'm currently working on some exciting blog posts about DevOps, cloud infrastructure, and automation. Stay tuned!
+                </p>
               </div>
-            )}
-          </>
-        )}
-      </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogPosts.map((post) => (
+                  <article key={post.id} className="h-full">
+                    <Card className="group hover:shadow-md transition-all duration-300 border-muted rounded-lg h-full flex flex-col">
+                      <CardHeader>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {post.tags.map((tag: string) => (
+                            <Badge key={tag} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                        <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                          {post.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-grow flex flex-col">
+                        <p className="text-muted-foreground mb-4">
+                          {post.excerpt}
+                        </p>
+                        
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </div>
+                            <div className="flex items-center">
+                              <User className="h-4 w-4 mr-1" />
+                              {post.author}
+                            </div>
+                          </div>
+                          <span>{post.read_time}</span>
+                        </div>
+
+                        <Button variant="outline" className="w-full text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-colors" asChild>
+                          <Link to={`/blog/${post.slug}`} aria-label={`Read more about ${post.title}`}>
+                            Read More
+                            <ExternalLink className="h-4 w-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </article>
+                ))}
+              </div>
+
+              {hasMore && (
+                <div className="text-center mt-12">
+                  <Button 
+                    variant="default" 
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+                    onClick={() => fetchBlogPosts(true)}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Loading More Posts...
+                      </>
+                    ) : (
+                      'Load More Posts'
+                    )}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </main>
       <Footer />
     </div>
   );

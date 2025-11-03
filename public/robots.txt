@@ -13,4 +13,16 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://dimpykhatwani.dev/sitemap.xml
+Sitemap: https://dimpykhatwani.com/sitemap.xml
+
+# Rate limiting for crawlers
+Crawl-delay: 10
+
+# Directories to disallow
+Disallow: /admin/
+Disallow: /login/
+Disallow: /api/
+
+# Specific file types to disallow
+Disallow: /*.json$
+Disallow: /*.txt$

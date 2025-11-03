@@ -12,6 +12,8 @@ interface SEOConfig {
   ogUrl?: string;
   twitterCard?: string;
   author?: string;
+  canonicalUrl?: string;
+  robots?: string;
 }
 
 /**
@@ -24,9 +26,11 @@ const DEFAULT_SEO: SEOConfig = {
   ogTitle: "Dimpy Khatwani - DevOps Engineer Portfolio",
   ogDescription: "Professional DevOps Engineer with expertise in cloud automation, containerization, and scalable infrastructure.",
   ogImage: "/og-image.jpg",
-  ogUrl: "https://dimpykhatwani.com/",
+  ogUrl: "https://dimpykhatwani.com",
   twitterCard: "summary_large_image",
-  author: "Dimpy Khatwani"
+  author: "Dimpy Khatwani",
+  canonicalUrl: "https://dimpykhatwani.com",
+  robots: "index, follow"
 };
 
 /**
@@ -76,6 +80,32 @@ export const updateMetaTags = (config: Partial<SEOConfig> = {}) => {
     }
   }
   
+  // Update canonical URL
+  if (seoConfig.canonicalUrl) {
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute("href", seoConfig.canonicalUrl);
+    } else {
+      canonicalLink = document.createElement("link");
+      canonicalLink.setAttribute("rel", "canonical");
+      canonicalLink.setAttribute("href", seoConfig.canonicalUrl);
+      document.head.appendChild(canonicalLink);
+    }
+  }
+  
+  // Update robots
+  if (seoConfig.robots) {
+    let robotsMeta = document.querySelector('meta[name="robots"]');
+    if (robotsMeta) {
+      (robotsMeta as HTMLMetaElement).content = seoConfig.robots;
+    } else {
+      robotsMeta = document.createElement("meta");
+      robotsMeta.setAttribute("name", "robots");
+      robotsMeta.setAttribute("content", seoConfig.robots);
+      document.head.appendChild(robotsMeta);
+    }
+  }
+  
   // Update Open Graph tags
   updateOpenGraphTags(seoConfig);
   
@@ -106,6 +136,9 @@ const updateOpenGraphTags = (config: SEOConfig) => {
   if (config.ogImage) {
     updateMetaProperty("og:image", config.ogImage);
   }
+  
+  // OG Site Name
+  updateMetaProperty("og:site_name", "Dimpy Khatwani Portfolio");
 };
 
 /**
@@ -126,6 +159,9 @@ const updateTwitterTags = (config: SEOConfig) => {
   if (config.ogImage) {
     updateMetaProperty("twitter:image", config.ogImage);
   }
+  
+  // Twitter Site
+  updateMetaProperty("twitter:site", "@dimpykhatwani");
 };
 
 /**
@@ -150,57 +186,70 @@ const updateMetaProperty = (property: string, content: string) => {
  */
 export const SEO_CONFIGS = {
   home: {
-    title: "Dimpy Khatwani - DevOps Engineer | Portfolio",
-    description: "DevOps Engineer specializing in AWS, Docker, Kubernetes, and CI/CD automation. Explore my projects and experience in cloud infrastructure.",
-    ogTitle: "Dimpy Khatwani - DevOps Engineer Portfolio",
-    ogDescription: "Professional DevOps Engineer with expertise in cloud automation, containerization, and scalable infrastructure."
+    title: "Dimpy Khatwani - Senior DevOps Engineer | AWS, Docker, Kubernetes Expert",
+    description: "Senior DevOps Engineer specializing in AWS, Docker, Kubernetes, and CI/CD automation. Explore my portfolio of cloud infrastructure projects and technical expertise.",
+    keywords: ["DevOps Engineer", "AWS Expert", "Docker Specialist", "Kubernetes Expert", "CI/CD Automation", "Cloud Infrastructure", "Terraform", "Jenkins"],
+    ogTitle: "Dimpy Khatwani - Senior DevOps Engineer Portfolio",
+    ogDescription: "Professional DevOps Engineer with expertise in cloud automation, containerization, and scalable infrastructure solutions.",
+    canonicalUrl: "https://dimpykhatwani.com"
   },
   skills: {
-    title: "Expertise - Dimpy Khatwani | DevOps Skills",
-    description: "Explore my technical expertise in DevOps, Cloud Platforms, Containerization, CI/CD, and Infrastructure as Code.",
-    ogTitle: "Expertise - Dimpy Khatwani | DevOps Skills",
-    ogDescription: "Detailed overview of my technical skills in DevOps, Cloud Engineering, and Infrastructure Automation."
+    title: "DevOps Skills & Expertise - Dimpy Khatwani | AWS, Docker, Kubernetes",
+    description: "Explore my technical expertise in DevOps, Cloud Platforms, Containerization, CI/CD, and Infrastructure as Code. AWS, Docker, Kubernetes, Terraform specialist.",
+    keywords: ["DevOps Skills", "AWS Skills", "Docker Expertise", "Kubernetes Skills", "CI/CD Expertise", "Infrastructure as Code", "Terraform", "Cloud Engineering"],
+    ogTitle: "DevOps Skills & Expertise - Dimpy Khatwani",
+    ogDescription: "Detailed overview of my technical skills in DevOps, Cloud Engineering, and Infrastructure Automation with AWS, Docker, and Kubernetes.",
+    canonicalUrl: "https://dimpykhatwani.com/skills"
   },
   experience: {
-    title: "Experience - Dimpy Khatwani | Professional Journey",
-    description: "Discover my professional experience as a DevOps Engineer, including roles at Toshal Infotech, Infinity Brains, and Narola Infotech.",
-    ogTitle: "Experience - Dimpy Khatwani | Professional Journey",
-    ogDescription: "Explore my career progression and key achievements in DevOps and Cloud Engineering roles."
+    title: "Professional Experience - Dimpy Khatwani | DevOps Career Journey",
+    description: "Discover my professional experience as a DevOps Engineer, including roles at Toshal Infotech, Infinity Brains, and Narola Infotech with key achievements.",
+    keywords: ["DevOps Experience", "Cloud Engineer Career", "DevOps Roles", "Infrastructure Automation Experience", "CI/CD Implementation"],
+    ogTitle: "Professional Experience - Dimpy Khatwani | DevOps Career",
+    ogDescription: "Explore my career progression and key achievements in DevOps and Cloud Engineering roles with detailed case studies.",
+    canonicalUrl: "https://dimpykhatwani.com/experience"
   },
   portfolio: {
-    title: "Portfolio - Dimpy Khatwani | DevOps Projects",
-    description: "View my DevOps and Cloud Engineering portfolio featuring projects with AWS, Docker, Kubernetes, and CI/CD implementations.",
-    ogTitle: "Portfolio - Dimpy Khatwani | DevOps Projects",
-    ogDescription: "Explore my portfolio of DevOps projects with detailed case studies and technical implementations."
+    title: "DevOps Projects Portfolio - Dimpy Khatwani | AWS, Docker, Kubernetes",
+    description: "View my DevOps and Cloud Engineering portfolio featuring projects with AWS, Docker, Kubernetes, and CI/CD implementations with case studies.",
+    keywords: ["DevOps Portfolio", "Cloud Projects", "AWS Projects", "Docker Projects", "Kubernetes Case Studies", "CI/CD Implementations"],
+    ogTitle: "DevOps Projects Portfolio - Dimpy Khatwani",
+    ogDescription: "Explore my portfolio of DevOps projects with detailed case studies and technical implementations using AWS, Docker, and Kubernetes.",
+    canonicalUrl: "https://dimpykhatwani.com/portfolio"
   },
   blog: {
-    title: "Blog - Dimpy Khatwani | DevOps & Cloud Engineering",
-    description: "Technical articles and tutorials on DevOps, cloud engineering, AWS, Docker, Kubernetes, and CI/CD automation.",
-    ogTitle: "Blog - Dimpy Khatwani | DevOps & Cloud Engineering",
-    ogDescription: "Explore technical articles on DevOps practices, cloud infrastructure, and automation tools."
+    title: "DevOps & Cloud Engineering Blog - Dimpy Khatwani | Technical Articles",
+    description: "Technical articles and tutorials on DevOps, cloud engineering, AWS, Docker, Kubernetes, and CI/CD automation best practices.",
+    keywords: ["DevOps Blog", "Cloud Engineering Articles", "AWS Tutorials", "Docker Tutorials", "Kubernetes Guides", "CI/CD Best Practices"],
+    ogTitle: "DevOps & Cloud Engineering Blog - Dimpy Khatwani",
+    ogDescription: "Explore technical articles on DevOps practices, cloud infrastructure, and automation tools with hands-on tutorials.",
+    canonicalUrl: "https://dimpykhatwani.com/blog"
   },
   blogPost: (postTitle: string, postExcerpt: string) => ({
-    title: `${postTitle} - Dimpy Khatwani Blog`,
+    title: `${postTitle} - Dimpy Khatwani DevOps Blog`,
     description: postExcerpt,
     ogTitle: postTitle,
-    ogDescription: postExcerpt
+    ogDescription: postExcerpt,
+    canonicalUrl: `https://dimpykhatwani.com/blog/${postTitle.toLowerCase().replace(/\s+/g, '-')}`
   }),
   projects: {
-    title: "Projects - Dimpy Khatwani | DevOps Portfolio",
-    description: "Explore my DevOps and cloud engineering projects featuring AWS, Docker, Kubernetes, and CI/CD implementations.",
-    ogTitle: "Projects - Dimpy Khatwani | DevOps Portfolio",
-    ogDescription: "View my portfolio of DevOps and cloud engineering projects with detailed case studies."
+    title: "DevOps & Cloud Projects - Dimpy Khatwani Portfolio | Case Studies",
+    description: "Explore my DevOps and cloud engineering projects featuring AWS, Docker, Kubernetes, and CI/CD implementations with detailed case studies.",
+    keywords: ["DevOps Projects", "Cloud Engineering", "AWS Case Studies", "Docker Implementations", "Kubernetes Solutions", "CI/CD Projects"],
+    ogTitle: "DevOps & Cloud Projects - Dimpy Khatwani Portfolio",
+    ogDescription: "View my portfolio of DevOps and cloud engineering projects with detailed case studies and technical solutions.",
+    canonicalUrl: "https://dimpykhatwani.com/projects"
   },
   login: {
     title: "Admin Login - Dimpy Khatwani Portfolio",
     description: "Admin login portal for portfolio management.",
-    ogTitle: "Admin Login - Dimpy Khatwani Portfolio",
-    ogDescription: "Secure admin login for portfolio content management."
+    robots: "noindex, nofollow",
+    canonicalUrl: "https://dimpykhatwani.com/login"
   },
   admin: {
     title: "Admin Dashboard - Dimpy Khatwani Portfolio",
     description: "Admin dashboard for managing portfolio content, blog posts, and projects.",
-    ogTitle: "Admin Dashboard - Dimpy Khatwani Portfolio",
-    ogDescription: "Content management system for portfolio administration."
+    robots: "noindex, nofollow",
+    canonicalUrl: "https://dimpykhatwani.com/admin"
   }
 };

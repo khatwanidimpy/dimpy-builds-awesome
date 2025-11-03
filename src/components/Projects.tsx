@@ -90,14 +90,14 @@ const Projects = () => {
   return (
     <section id="projects" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <header className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Latest <span className="text-primary">Projects</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Selected projects showcasing my technical expertise
+            Selected projects showcasing my technical expertise in DevOps and Cloud Engineering
           </p>
-        </div>
+        </header>
 
         {projects.length === 0 ? (
           <div className="text-center py-12">
@@ -111,53 +111,56 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project) => (
-              <Card key={project.id} className="group hover:shadow-md transition-all duration-300 bg-card border-muted rounded-lg overflow-hidden h-full flex flex-col">
-                {project.featured_image && (
-                  <div className="aspect-video bg-muted overflow-hidden">
-                    <img 
-                      src={getImageUrl(project.featured_image) || ''} 
-                      alt={project.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                    {project.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow flex flex-col">
-                  <p className="text-muted-foreground mb-4 flex-grow">
-                    {project.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {project.technologies.map((tech: string) => (
-                      <Badge key={tech} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
+              <article key={project.id} className="h-full">
+                <Card className="group hover:shadow-md transition-all duration-300 bg-card border-muted rounded-lg overflow-hidden h-full flex flex-col">
+                  {project.featured_image && (
+                    <div className="aspect-video bg-muted overflow-hidden">
+                      <img 
+                        src={getImageUrl(project.featured_image) || ''} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow flex flex-col">
+                    <p className="text-muted-foreground mb-4 flex-grow">
+                      {project.description}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.technologies.map((tech: string) => (
+                        <Badge key={tech} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
 
-                  <div className="flex space-x-3 mt-auto">
-                    {project.project_url && (
-                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
-                        <a href={project.project_url} target="_blank" rel="noopener noreferrer">
-                          View Project
-                          <ExternalLink className="h-4 w-4 ml-2" />
-                        </a>
-                      </Button>
-                    )}
-                    {project.github_url && (
-                      <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
-                        <a href={project.github_url} target="_blank" rel="noopener noreferrer">
-                          <Github className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex space-x-3 mt-auto">
+                      {project.project_url && (
+                        <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
+                          <a href={project.project_url} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} project`}>
+                            View Project
+                            <ExternalLink className="h-4 w-4 ml-2" />
+                          </a>
+                        </Button>
+                      )}
+                      {project.github_url && (
+                        <Button variant="outline" size="sm" className="text-primary border-primary/30 hover:bg-primary/10 hover:border-primary/50 flex-1" asChild>
+                          <a href={project.github_url} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} on GitHub`}>
+                            <Github className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </article>
             ))}
           </div>
         )}

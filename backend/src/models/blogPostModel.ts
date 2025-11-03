@@ -38,8 +38,8 @@ export class BlogPostModel {
     // Parse the tags field from JSON string to array
     return (rows as RowDataPacket[]).map(row => ({
       ...row,
-      tags: typeof row.tags === 'string' 
-        ? JSON.parse(row.tags) 
+      tags: typeof row.tags === 'string'
+        ? JSON.parse(row.tags)
         : row.tags || []
     })) as BlogPost[];
   }
@@ -55,8 +55,8 @@ export class BlogPostModel {
       // Parse the tags field from JSON string to array
       return {
         ...row,
-        tags: typeof row.tags === 'string' 
-          ? JSON.parse(row.tags) 
+        tags: typeof row.tags === 'string'
+          ? JSON.parse(row.tags)
           : row.tags || []
       } as BlogPost;
     }
@@ -74,8 +74,8 @@ export class BlogPostModel {
       // Parse the tags field from JSON string to array
       return {
         ...row,
-        tags: typeof row.tags === 'string' 
-          ? JSON.parse(row.tags) 
+        tags: typeof row.tags === 'string'
+          ? JSON.parse(row.tags)
           : row.tags || []
       } as BlogPost;
     }
@@ -116,8 +116,8 @@ export class BlogPostModel {
     // Parse the tags field from JSON string to array
     return {
       ...row,
-      tags: typeof row.tags === 'string' 
-        ? JSON.parse(row.tags) 
+      tags: typeof row.tags === 'string'
+        ? JSON.parse(row.tags)
         : row.tags || []
     } as BlogPost;
   }
