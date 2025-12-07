@@ -2,6 +2,6 @@ version: '3.8'
 services:
    web:
     build:
-      context: .
+      context: .D:\Upskill\dimpy-builds-awesome\backend\Dockerfile
       dockerfile: Dockerfile
  
