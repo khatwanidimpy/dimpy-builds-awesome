@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:all": "node build-all.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "backend:dev": "cd backend && npm run dev",
@@ -15,7 +16,9 @@
     "generate-jwt": "cd backend && npm run generate-jwt",
     "setup:full": "npm install && cd backend && npm install",
     "dev:full": "concurrently \"npm run dev\" \"npm run backend:dev\" --names \"frontend,backend\" --prefix-colors \"cyan,magenta\"",
-    "sitemap": "node scripts/generate-sitemap.js"
+    "start": "node server.cjs",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "postinstall": "cd backend && npm install &"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -52,7 +55,9 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
+    "express": "^5.2.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
